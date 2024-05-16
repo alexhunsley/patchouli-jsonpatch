@@ -1,0 +1,24 @@
+{
+  "originHash" : "64534c0433494e9833d0eaca18219cde372e45e0e2e1e2a25a144bc7706a1725",
+  "pins" : [
+    {
+      "identity" : "patchouli-core",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/alexhunsley/patchouli-core",
+      "state" : {
+        "branch" : "main",
+        "revision" : "c0608e82a0ccab8b469deddd6928c63d351b467a"
+      }
+    },
+    {
+      "identity" : "swift-jsonpatch",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/raymccrae/swift-jsonpatch",
+      "state" : {
+        "revision" : "1eb12363c1ee681712d2a42d2ee6f0322f92cf31",
+        "version" : "1.0.6"
+      }
+    }
+  ],
+  "version" : 3
+}

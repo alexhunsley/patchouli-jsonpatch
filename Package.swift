@@ -8,15 +8,15 @@ let package = Package(
     products: [
         .library(
             name: "PatchouliJSON",
-            targets: ["PatchouliJSON]),
+            targets: ["PatchouliJSON"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/alexhunsley/patchouli-core", .upToNextMajor(from: "1.0.6"))
+        .package(url: "https://github.com/alexhunsley/patchouli-core", branch: "main")  //.upToNextMajor(from: "1.0.6"))
     ],
     targets: [
         .target(
-            name: "PatchouliCore",
-            dependencies: [.product(name: "PatchouliCore", package: "PatchouliCore")]
+            name: "PatchouliJSON",
+            dependencies: [.product(name: "PatchouliCore", package: "patchouli-core")]
         ),
         .testTarget(
             name: "PatchouliJSONTests",
