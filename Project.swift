@@ -15,8 +15,7 @@ let project = Project(
             dependencies:
             [
                 .project(target: "PatchouliCore", path: "../PatchouliCore"),
-//                .package(product: "swift-jsonpatch") // this defo is wrong.
-                .package(product: "JSONPatch") //  <-- the right thing
+                .package(product: "JSONPatch")
             ]
         ),
         .target(
