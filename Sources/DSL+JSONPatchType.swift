@@ -8,18 +8,9 @@
 import Foundation
 import PatchouliCore
 
-//struct ResultBuilderHelper<T> {
-//    let input: () -> String
-//
-//    @JSONSimpleContentBuilder var jsonCont: Data {
-//        input()
-//    }
-//    // = jsonContentClosure()
-//}
-
-// TODO there must be a nicer way to do this!
-@JSONSimpleContentBuilder func doIt(_ ss: () -> Any?) -> Data {
-    ss()
+// TODO nicer way to do this
+@JSONSimpleContentBuilder func applyBuilder(_ jsonContentClosure: () -> Any?) -> Data {
+    jsonContentClosure()
 }
 
 public func JSONObject(@AddressedPatchItemsBuilder<JSONPatchType> patchedBy patchItems: PatchListProducer<JSONPatchType> = { AddressedPatch.emptyPatchList }) -> PatchedJSON {
@@ -30,10 +21,6 @@ public func JSONArray(@AddressedPatchItemsBuilder<JSONPatchType> patchedBy patch
     Content(JSONPatchType.emptyArrayContent, patchedBy: patchItems)
 }
 
-//public func EmptyArray(JSONPatchType.emptyContent) {
-//
-//}
-
 public func Add(address: String,
 //                @JSONSimpleContentBuilder jsonContent: () -> Data,
                 jsonContent jsonContentClosure: @autoclosure @escaping () -> Any?, // Data,
@@ -43,47 +30,18 @@ public func Add(address: String,
 
 //    @JSONSimpleContentBuilder var goob: Data = { jsonContent }()
 
-//    let resultBuilderHelper: ResultBuilderHelper<String> = ResultBuilderHelper<String>(jsonCont: jsonContentClosure)
-
-//    let retValue = resultBuilderHelper.jsonCont
-
-//    let retValueData = doIt(jsonContentClosure())
-
-    let retValueData = doIt(jsonContentClosure)
-
-//    let jsonContData = Data(retValue.utf8)
-
-    print("jsonCont: \(String(decoding: retValueData, as: UTF8.self))")
+    let retValueData = applyBuilder(jsonContentClosure)
+//    print("jsonCont: \(String(decoding: retValueData, as: UTF8.self))")
 
     return Add(address: address,
                content: PatchedJSON(content: retValueData,
                                     contentPatches: patchItems()))
 }
 
-// general DSL bit:
-//
-//public func Add<T: PatchType>(address: T.AddressType,
-//                              content: PatchedContent<T>)
-//            -> AddressedPatch<T> {
-//
-//    return AddressedPatch(patchSpec: PatchSpec.add(address),
-//                          contentPatch: content)
-//}
-//
-//public func Add<T: PatchType>(address: T.AddressType,
-//                              simpleContent: T.ContentType,
-//                              @AddressedPatchItemsBuilder<T> patchedBy patchItems: PatchListProducer<T> = { AddressedPatch.emptyPatchList })
-//            -> AddressedPatch<T> {
-//
-//    Add(address: address,
-//        content: PatchedContent(content: simpleContent,
-//                                contentPatches: patchItems()))
-//}
-
 @resultBuilder
 public struct JSONSimpleContentBuilder {
     // If we can use variadics, we're not prone to the "<= 10 items" limitation seen
-    // in SwiftUI (due to needing implementation by lots of funcs to match all possible param counts!)
+    // in SwiftUI (due to needing implementation by lots of funcs to match all possible param counts)
 
     // empty block to empty list
     public static func buildBlock() -> Data {
@@ -133,4 +91,3 @@ public struct JSONSimpleContentBuilder {
         Data("\(integer)".utf8)
     }
 }
-//

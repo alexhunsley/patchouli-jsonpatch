@@ -27,15 +27,9 @@ public struct JSONPatchType: PatchType {
     static public var patcher = Patchable<JSONPatchType>(
         added: { (container: Data, addition: Data, address: String) in
             let additionStr = String(decoding: addition, as: UTF8.self)
-
-            // note the addition of '/-' postfix to the address for 'path'
-            //                                     [{"op": "add", "path": "\(address)/-", "value": \(additionStr)}]
             let madeJSONPatch = Data("""
                                      [{"op": "add", "path": "\(address)", "value": \(additionStr)}]
                                      """.utf8)
-
-//            print(String(decoding: madeJSONPatch, as: UTF8.self))
-
             let patch = try! JSONPatch(data: madeJSONPatch)
             return try! patch.apply(to: container)
         },
@@ -45,8 +39,6 @@ public struct JSONPatchType: PatchType {
             let madeJSONPatch = Data("""
                                      [{"op": "replace", "path": "\(address)", "value": \(replacementStr)}]
                                      """.utf8)
-
-//            print(String(decoding: madeJSONPatch, as: UTF8.self))
             let patch = try! JSONPatch(data: madeJSONPatch)
             return try! patch.apply(to: container)
         }
@@ -57,7 +49,8 @@ public struct JSONPatchType: PatchType {
 
     static public var emptyContent = emptyObjectContent
 
-    // with json and strings, does inout even viable?
+    // with json and strings, inout doesn't make much practical sense,
+    // but for demonstration purposes.
 //    static public var inPlacePatcher: InPlacePatchable<JSONPatchType>? = .init(
 //        replace: { (container: inout Data, replacement: Data, address: String) -> Void in
 //            let replacementStr = String(decoding: replacement, as: UTF8.self)
