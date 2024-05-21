@@ -18,9 +18,10 @@ final class PatchouliJSONTests: XCTestCase {
                               """.utf8)
 
         let patchedJSONContent: PatchedJSON = Content(json) {
-            Patch(address: "/a", withContent: PatchedContent(content: jsonInsert))
+            Replace(address: "/a", withContent: PatchedContent(content: jsonInsert))
         }
 
+        // TODO same as for string test: testReducers()
         let dataResult = try patchedJSONContent.reduced()
         XCTAssertEqual(String(decoding: dataResult, as: UTF8.self), "{\"a\":\"hello\"}")
     }

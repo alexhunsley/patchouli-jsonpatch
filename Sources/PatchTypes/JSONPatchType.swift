@@ -51,7 +51,7 @@ public struct JSONPatchType: PatchType {
 
     // with json and strings, inout doesn't make much practical sense,
     // but for demonstration purposes.
-//    static public var inPlacePatcher: InPlacePatchable<JSONPatchType>? = .init(
+//    static public var mutatingPatcher: MutatingPatchable<JSONPatchType>? = .init(
 //        replace: { (container: inout Data, replacement: Data, address: String) -> Void in
 //            let replacementStr = String(decoding: replacement, as: UTF8.self)
 //
