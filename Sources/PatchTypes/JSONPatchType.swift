@@ -30,7 +30,7 @@ extension String {
 //    }
 //}
 
-public enum JSONContentIdea {
+public enum JSONContent {
     case literal(Data)
     case fileURL(URL)
     case bundleResource(String)
@@ -48,7 +48,7 @@ public enum JSONContentIdea {
 }
 
 public struct JSONPatchType: PatchType {
-    public typealias ContentType = JSONContentIdea
+    public typealias ContentType = JSONContent
 //    public typealias ContentType = Data
     public typealias AddressType = String
 
@@ -117,11 +117,11 @@ public struct JSONPatchType: PatchType {
         }
     )
 
-    static public var emptyObjectContent = JSONContentIdea.literal("{}".utf8Data)
-    static public var emptyArrayContent = JSONContentIdea.literal("[]".utf8Data)
+    static public var emptyObjectContent = JSONContent.literal("{}".utf8Data)
+    static public var emptyArrayContent = JSONContent.literal("[]".utf8Data)
 
 //    static public var emptyContent = emptyObjectContent
-    public static var emptyContent: JSONContentIdea = emptyObjectContent
+    public static var emptyContent: JSONContent = emptyObjectContent
 
     // with json and strings, inout doesn't make much practical sense,
     // but for demonstration purposes.

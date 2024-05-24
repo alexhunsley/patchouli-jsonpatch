@@ -58,7 +58,7 @@ public struct JSONSimpleContentBuilder {
 
     public static func buildBlock(_ item: Any?) -> Data {
 
-        if let contentIdea = item as? JSONContentIdea {
+        if let contentIdea = item as? JSONContent {
             switch contentIdea {
             case let .literal(data):
                 return data
