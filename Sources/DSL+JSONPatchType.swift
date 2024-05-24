@@ -48,6 +48,7 @@ public struct JSONSimpleContentBuilder {
         Data("".utf8)
     }
 
+    // TODO maybe use stuff in JSONPatch here? more data types?
     public static func buildBlock(item: Any?) -> Data {
         if let item {
             return buildBlock(item)
