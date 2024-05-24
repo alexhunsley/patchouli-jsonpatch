@@ -70,54 +70,51 @@ public struct JSONPatchType: PatchType {
             let patch = try! JSONPatch(data: madeJSONPatch)
             // so we need to change `to: container` here to use the ContentIdea and get the data from whatever src
             return try! .literal(patch.apply(to: container.data))
-        } //,
-//        removed: { (container: Data, address: String) -> Data in
-//            let madeJSONPatch = Data("""
-//                                     [{"op": "remove", "path": "\(address)"}]
-//                                     """.utf8)
-//            let patch = try! JSONPatch(data: madeJSONPatch)
-//            return try! patch.apply(to: container)
-//        },
-//        replaced: { (container: Data, replacement: Data, address: String) -> Data in
-//            let replacementStr = String(decoding: replacement, as: UTF8.self)
-//
-//            let madeJSONPatch = Data("""
-//                                     [{"op": "replace", "path": "\(address)", "value": \(replacementStr)}]
-//                                     """.utf8)
-//            let patch = try! JSONPatch(data: madeJSONPatch)
-//            return try! patch.apply(to: container)
-//        },
-//        copied: { (container: Data, fromAddress: String, toAddress: String) in
-//            let madeJSONPatch = Data("""
-//                                     [{"op": "copy", "copy": "\(fromAddress)", "path": \(toAddress)}]
-//                                     """.utf8)
-//            let patch = try! JSONPatch(data: madeJSONPatch)
-//            return try! patch.apply(to: container)
-//        },
-//        moved: { (container: Data, fromAddress: String, toAddress: String) in
-//            let madeJSONPatch = Data("""
-//                                     [{"op": "move", "copy": "\(fromAddress)", "path": \(toAddress)}]
-//                                     """.utf8)
-//            let patch = try! JSONPatch(data: madeJSONPatch)
-//            return try! patch.apply(to: container)
-//        },
-//        test: { (container: Data, value: Data, address: String) -> Bool in
-//            let madeJSONPatch = Data("""
-//                                     [{"op": "test", "path": "\(address)", "value": \(value)}]
-//                                     """.utf8)
-//            // TODO throw something if this doesn't work? and same for others
-//            let patch = try! JSONPatch(data: madeJSONPatch)
-//            do {
-//                let _ = try patch.apply(to: container)
-//                return true
-//            }
-//            catch {
-//                return false
-//            }
-//        }
+        },
+        removed: { (container: ContentType, address: String) -> ContentType in
+            let madeJSONPatch = Data("""
+                                     [{"op": "remove", "path": "\(address)"}]
+                                     """.utf8)
+            let patch = try! JSONPatch(data: madeJSONPatch)
+            return try! .literal(patch.apply(to: container.data))
+        },
+        replaced: { (container: ContentType, replacement: ContentType, address: String) -> ContentType in
+            let replacementStr = String(decoding: replacement.data, as: UTF8.self)
 
-
-        // TODO more here!
+            let madeJSONPatch = Data("""
+                                     [{"op": "replace", "path": "\(address)", "value": \(replacementStr)}]
+                                     """.utf8)
+            let patch = try! JSONPatch(data: madeJSONPatch)
+            return try! .literal(patch.apply(to: container.data))
+        },
+        copied: { (container: ContentType, fromAddress: String, toAddress: String) in
+            let madeJSONPatch = Data("""
+                                     [{"op": "copy", "copy": "\(fromAddress)", "path": \(toAddress)}]
+                                     """.utf8)
+            let patch = try! JSONPatch(data: madeJSONPatch)
+            return try! .literal(patch.apply(to: container.data))
+        },
+        moved: { (container: ContentType, fromAddress: String, toAddress: String) in
+            let madeJSONPatch = Data("""
+                                     [{"op": "move", "copy": "\(fromAddress)", "path": \(toAddress)}]
+                                     """.utf8)
+            let patch = try! JSONPatch(data: madeJSONPatch)
+            return try! .literal(patch.apply(to: container.data))
+        },
+        test: { (container: ContentType, value: ContentType, address: String) -> Bool in
+            let madeJSONPatch = Data("""
+                                     [{"op": "test", "path": "\(address)", "value": \(value)}]
+                                     """.utf8)
+            // TODO throw something if this doesn't work? and same for others
+            let patch = try! JSONPatch(data: madeJSONPatch)
+            do {
+                let _ = try patch.apply(to: container)
+                return true
+            }
+            catch {
+                return false
+            }
+        }
     )
 
     static public var emptyObjectContent = JSONContentIdea.literal("{}".utf8Data)
