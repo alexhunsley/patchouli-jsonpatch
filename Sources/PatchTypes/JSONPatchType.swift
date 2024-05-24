@@ -36,8 +36,14 @@ public enum JSONContentIdea {
     case bundleResource(String)
 
     var data: Data {
-        // TODO get it
-        Data()
+        // TODO finish this
+        switch self {
+        case let .literal(data):
+            return data
+        default:
+            assertionFailure("Implement this")
+            return Data()
+        }
     }
 }
 
@@ -60,6 +66,7 @@ public struct JSONPatchType: PatchType {
             let madeJSONPatch = Data("""
                                      [{"op": "add", "path": "\(address)", "value": \(additionStr)}]
                                      """.utf8)
+            print(String(decoding: madeJSONPatch, as: UTF8.self))
             let patch = try! JSONPatch(data: madeJSONPatch)
             // so we need to change `to: container` here to use the ContentIdea and get the data from whatever src
             return try! .literal(patch.apply(to: container.data))
@@ -113,11 +120,11 @@ public struct JSONPatchType: PatchType {
         // TODO more here!
     )
 
-    static public var emptyObjectContent = "{}".utf8Data
-    static public var emptyArrayContent = "[]".utf8Data
+    static public var emptyObjectContent = JSONContentIdea.literal("{}".utf8Data)
+    static public var emptyArrayContent = JSONContentIdea.literal("[]".utf8Data)
 
 //    static public var emptyContent = emptyObjectContent
-    public static var emptyContent: JSONContentIdea = .literal(Data())
+    public static var emptyContent: JSONContentIdea = emptyObjectContent
 
     // with json and strings, inout doesn't make much practical sense,
     // but for demonstration purposes.

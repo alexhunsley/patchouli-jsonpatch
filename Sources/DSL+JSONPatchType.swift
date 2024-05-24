@@ -34,7 +34,7 @@ public func Add(address: String,
 //    print("jsonCont: \(String(decoding: retValueData, as: UTF8.self))")
 
     return Add(address: address,
-               content: PatchedJSON(content: retValueData,
+               content: PatchedJSON(content: .literal(retValueData),
                                     contentPatches: patchItems()))
 }
 
@@ -57,6 +57,17 @@ public struct JSONSimpleContentBuilder {
     }
 
     public static func buildBlock(_ item: Any?) -> Data {
+
+        if let contentIdea = item as? JSONContentIdea {
+            switch contentIdea {
+            case let .literal(data):
+                return data
+            default:
+                assertionFailure("Impl me 4")
+                return Data()
+            }
+        }
+
         if let str = item as? String {
             let enquotedString = "\"" + str + "\""
             return Data(enquotedString.utf8)
