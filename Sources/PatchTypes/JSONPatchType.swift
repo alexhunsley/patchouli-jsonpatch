@@ -98,21 +98,39 @@ public struct JSONPatchType: PatchType {
 //    public typealias MovedHandler = @Sendable (C, A, A) -> C
 //    public typealias TestHandler = @Sendable (C, A) -> Bool
 //
+
+    // plan: change just added here to append the data so we have a list of the '{"op":' stuff for json patch.
+    // Can do just by using the .literal for content? We already deal with 'content'.
+
+    static func appendData(forContent appendContent: ContentType, toContent content: ContentType) throws -> JSONContent {
+        var containerData = try content.data()
+        containerData.append(try appendContent.data())
+
+        return .literal(containerData)
+    }
+
     /// The Protocol Witness used by the reducer
     static public var patcher = Patchable<JSONPatchType>(
         added: { (container: ContentType, addition: ContentType, address: String) throws -> ContentType in
+
             let additionStr = String(decoding: try addition.data(), as: UTF8.self)
             let madeJSONPatch = Data("""
                                      [{"op": "add", "path": "\(address)", "value": \(additionStr)}]
                                      """.utf8)
             print(String(decoding: madeJSONPatch, as: UTF8.self))
-            let patch = try! JSONPatch(data: madeJSONPatch)
 
-            let x = try container.data()
-            print("Data = \(x)")
+//            var containerData = try container.data()
+//            containerData.append(try addition.data())
+//
+            return try appendData(forContent: .literal(madeJSONPatch), toContent: container)
 
-            // so we need to change `to: container` here to use the ContentIdea and get the data from whatever src
-            return try! .literal(patch.apply(to: container.data()))
+            //            let patch = try! JSONPatch(data: madeJSONPatch)
+//
+//            let x = try container.data()
+//            print("Data = \(x)")
+//
+//            // so we need to change `to: container` here to use the ContentIdea and get the data from whatever src
+//            return try! .literal(patch.apply(to: container.data()))
         },
         removed: { (container: ContentType, address: String) -> ContentType in
             let madeJSONPatch = Data("""
