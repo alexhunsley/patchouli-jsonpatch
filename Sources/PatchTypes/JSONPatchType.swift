@@ -1,6 +1,7 @@
 import Foundation
 import PatchouliCore
 import JSONPatch
+import PatchouliDemoAppResources
 
 // MARK: - DSL primitive that supports JSON Patch (RFC6902)
 //
@@ -9,6 +10,8 @@ import JSONPatch
 //
 // https://datatracker.ietf.org/doc/html/rfc6902
 
+/// An explicit type for JSON null. Trying to use 'nil' for this would be a bad
+/// idea because our ResultBuilders use nil internally when simplifying.
 public let null: Any? = nil
 
 public typealias PatchedJSON = PatchedContent<JSONPatchType>
@@ -33,17 +36,32 @@ extension String {
 public enum JSONContent {
     case literal(Data)
     case fileURL(URL)
-    case bundleResource(String)
+    case bundleResource(Bundle, String)
 
-    var data: Data {
-        // TODO finish this
+    // herus
+    func data() throws -> Data {
         switch self {
         case let .literal(data):
             return data
+        case let .bundleResource(bundle, bundleResourceName):
+            // maybe do caching later? if feeling excessive. prolly OTT though
+
+//            guard let fileURL = Bundle.main.url(forResource: bundleResourceName, withExtension: "json") else {
+            guard let fileURL = bundle.url(forResource: bundleResourceName, withExtension: "json") else {
+                // TODO throw
+                assertionFailure("Didn't find the json resource")
+                return Data()
+            }
+            return try Data(contentsOf: fileURL)
         default:
             assertionFailure("Implement this")
             return Data()
         }
+    }
+
+    /// Convenience to make a literal from various types
+    public static func make(_ value: @autoclosure @escaping () -> Any?) -> JSONContent {
+        .literal(applyBuilder(value))
     }
 }
 
@@ -61,47 +79,51 @@ public struct JSONPatchType: PatchType {
 //
     /// The Protocol Witness used by the reducer
     static public var patcher = Patchable<JSONPatchType>(
-        added: { (container: ContentType, addition: ContentType, address: String) -> ContentType in
-            let additionStr = String(decoding: addition.data, as: UTF8.self)
+        added: { (container: ContentType, addition: ContentType, address: String) throws -> ContentType in
+            let additionStr = String(decoding: try addition.data(), as: UTF8.self)
             let madeJSONPatch = Data("""
                                      [{"op": "add", "path": "\(address)", "value": \(additionStr)}]
                                      """.utf8)
             print(String(decoding: madeJSONPatch, as: UTF8.self))
             let patch = try! JSONPatch(data: madeJSONPatch)
+
+            let x = try container.data()
+            print("Data = \(x)")
+
             // so we need to change `to: container` here to use the ContentIdea and get the data from whatever src
-            return try! .literal(patch.apply(to: container.data))
+            return try! .literal(patch.apply(to: container.data()))
         },
         removed: { (container: ContentType, address: String) -> ContentType in
             let madeJSONPatch = Data("""
                                      [{"op": "remove", "path": "\(address)"}]
                                      """.utf8)
             let patch = try! JSONPatch(data: madeJSONPatch)
-            return try! .literal(patch.apply(to: container.data))
+            return try! .literal(patch.apply(to: container.data()))
         },
-        replaced: { (container: ContentType, replacement: ContentType, address: String) -> ContentType in
-            let replacementStr = String(decoding: replacement.data, as: UTF8.self)
+        replaced: { (container: ContentType, replacement: ContentType, address: String) throws -> ContentType in
+            let replacementStr = String(decoding: try replacement.data(), as: UTF8.self)
 
             let madeJSONPatch = Data("""
                                      [{"op": "replace", "path": "\(address)", "value": \(replacementStr)}]
                                      """.utf8)
             let patch = try! JSONPatch(data: madeJSONPatch)
-            return try! .literal(patch.apply(to: container.data))
+            return try! .literal(patch.apply(to: container.data()))
         },
-        copied: { (container: ContentType, fromAddress: String, toAddress: String) in
+        copied: { (container: ContentType, fromAddress: String, toAddress: String) throws in
             let madeJSONPatch = Data("""
                                      [{"op": "copy", "copy": "\(fromAddress)", "path": \(toAddress)}]
                                      """.utf8)
             let patch = try! JSONPatch(data: madeJSONPatch)
-            return try! .literal(patch.apply(to: container.data))
+            return try! .literal(patch.apply(to: container.data()))
         },
-        moved: { (container: ContentType, fromAddress: String, toAddress: String) in
+        moved: { (container: ContentType, fromAddress: String, toAddress: String) throws in
             let madeJSONPatch = Data("""
                                      [{"op": "move", "copy": "\(fromAddress)", "path": \(toAddress)}]
                                      """.utf8)
             let patch = try! JSONPatch(data: madeJSONPatch)
-            return try! .literal(patch.apply(to: container.data))
+            return try! .literal(patch.apply(to: container.data()))
         },
-        test: { (container: ContentType, value: ContentType, address: String) -> Bool in
+        test: { (container: ContentType, value: ContentType, address: String) throws -> Bool in
             let madeJSONPatch = Data("""
                                      [{"op": "test", "path": "\(address)", "value": \(value)}]
                                      """.utf8)
@@ -117,8 +139,13 @@ public struct JSONPatchType: PatchType {
         }
     )
 
+    // TODO use our helper, rather than utf8 directly, then can kill the above utf8Data helper?
+    // -- hmm, issues.
+//    static public var emptyObjectContent = JSONContent.make("{}")
+//    static public var emptyArrayContent = JSONContent.make("[]")
     static public var emptyObjectContent = JSONContent.literal("{}".utf8Data)
     static public var emptyArrayContent = JSONContent.literal("[]".utf8Data)
+
 
 //    static public var emptyContent = emptyObjectContent
     public static var emptyContent: JSONContent = emptyObjectContent

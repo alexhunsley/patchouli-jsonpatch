@@ -21,10 +21,24 @@ public func JSONArray(@AddressedPatchItemsBuilder<JSONPatchType> patchedBy patch
     Content(JSONPatchType.emptyArrayContent, patchedBy: patchItems)
 }
 
+//public func Content<T: PatchType>(_ content: T.ContentType,
+//                                  @AddressedPatchItemsBuilder<T> patchedBy patchItems: PatchListProducer<T> = { AddressedPatch.emptyPatchList })
+//        -> PatchedContent<T> {
+//
+//    PatchedContent(content: content, contentPatches: patchItems())
+//}
+
+// makeContent?
+//public func Content<T: PatchType>(_ content: T.ContentType,
+//                                  patchList: [AddressedPatch<T>])
+//        -> PatchedContent<T> {
+//
+//    PatchedContent(content: content, contentPatches: patchList)
+//}
+
 public func Add(address: String,
-//                @JSONSimpleContentBuilder jsonContent: () -> Data,
-                jsonContent jsonContentClosure: @autoclosure @escaping () -> Any?, // Data,
-//                jsonContent: String, // Data,
+                jsonContent jsonContentClosure: @autoclosure @escaping () -> Any?,
+//                jsonContent: Any?,
                 @AddressedPatchItemsBuilder<JSONPatchType> patchedBy patchItems: PatchListProducer<JSONPatchType> = { AddressedPatch.emptyPatchList })
             -> JSONPatchItem {
 
@@ -36,6 +50,25 @@ public func Add(address: String,
     return Add(address: address,
                content: PatchedJSON(content: .literal(retValueData),
                                     contentPatches: patchItems()))
+
+    // alt version thart uses JSONContent.make - means we don't need the autoclosure for caller of this.
+                // hmm, problems with double quoting! come back to this idea
+//    return Add(address: address,
+//               content: PatchedJSON(content: JSONContent.make(jsonContent),
+//                                    contentPatches: patchItems()))
+}
+
+
+public func Replace(address: String,
+                jsonContent jsonContentClosure: @autoclosure @escaping () -> Any?,
+                @AddressedPatchItemsBuilder<JSONPatchType> patchedBy patchItems: PatchListProducer<JSONPatchType> = { AddressedPatch.emptyPatchList })
+            -> JSONPatchItem {
+
+    let retValueData = applyBuilder(jsonContentClosure)
+
+    return Replace(address: address,
+                   withContent: PatchedJSON(content: .literal(retValueData),
+                                            contentPatches: patchItems()))
 }
 
 @resultBuilder
@@ -58,6 +91,7 @@ public struct JSONSimpleContentBuilder {
 
     public static func buildBlock(_ item: Any?) -> Data {
 
+        // herus
         if let contentIdea = item as? JSONContent {
             switch contentIdea {
             case let .literal(data):
@@ -103,3 +137,4 @@ public struct JSONSimpleContentBuilder {
         Data("\(integer)".utf8)
     }
 }
+//

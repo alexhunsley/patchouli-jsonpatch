@@ -23,14 +23,14 @@ final class PatchouliJSONTests: XCTestCase {
 
         // TODO same as for string test: testReducers()
         let dataResult = try patchedJSONContent.reduced()
-        XCTAssertEqual(String(decoding: dataResult.data, as: UTF8.self), "{\"a\":\"hello\"}")
+        XCTAssertEqual(String(decoding: try dataResult.data(), as: UTF8.self), "{\"a\":\"hello\"}")
     }
 
     func test_DSL_emptyContent() throws {
         // can I put emptyContent into extension on content? probably
         let patchedJSONContent: PatchedJSON = Content(JSONPatchType.emptyContent)
         let dataResult = try patchedJSONContent.reduced()
-        XCTAssertEqual(String(decoding: dataResult.data, as: UTF8.self), "{}")
+        XCTAssertEqual(String(decoding: try dataResult.data(), as: UTF8.self), "{}")
     }
 
     func test_DSL_patchedJSONContent1() throws {
@@ -38,7 +38,7 @@ final class PatchouliJSONTests: XCTestCase {
             Add(address: "", simpleContent: .literal("\"alex\"".utf8Data))
         }
         let dataResult = try patchedJSONContent.reduced()
-        XCTAssertEqual(String(decoding: dataResult.data, as: UTF8.self), """
+        XCTAssertEqual(String(decoding: try dataResult.data(), as: UTF8.self), """
                                                                     "alex"
                                                                     """)
     }
@@ -48,7 +48,7 @@ final class PatchouliJSONTests: XCTestCase {
             Add(address: "/", simpleContent: .literal("\"alex\"".utf8Data))
         }
         let dataResult = try patchedJSONContent.reduced()
-        XCTAssertEqual(String(decoding: dataResult.data, as: UTF8.self), """
+        XCTAssertEqual(String(decoding: try dataResult.data(), as: UTF8.self), """
                                                                     {"":"alex"}
                                                                     """)
     }
@@ -59,7 +59,7 @@ final class PatchouliJSONTests: XCTestCase {
             Add(address: "/new", simpleContent: .literal("\"mike\"".utf8Data))
         }
         let dataResult = try patchedJSONContent.reduced()
-        XCTAssertEqual(String(decoding: dataResult.data, as: UTF8.self), """
+        XCTAssertEqual(String(decoding: try dataResult.data(), as: UTF8.self), """
                                                                     {"new":"mike"}
                                                                     """)
     }
@@ -71,7 +71,7 @@ final class PatchouliJSONTests: XCTestCase {
             Add(address: "/myArray/-", simpleContent: .literal("\"alex\"".utf8Data))
         }
         let dataResult = try patchedJSONContent.reduced()
-        XCTAssertEqual(String(decoding: dataResult.data, as: UTF8.self), """
+        XCTAssertEqual(String(decoding: try dataResult.data(), as: UTF8.self), """
                                                                     {"myArray":["mike","alex"]}
                                                                     """)
     }
@@ -115,7 +115,7 @@ final class PatchouliJSONTests: XCTestCase {
 //            Add(address: "/myArray/0", simpleString: "bob")
         }
         let dataResult = try patchedJSONContent.reduced()
-        XCTAssertEqual(String(decoding: dataResult.data, as: UTF8.self), """
+        XCTAssertEqual(String(decoding: try dataResult.data(), as: UTF8.self), """
                                                                     {"myArray":["mike",7,1.2,[5,61,[3]],[\"foo\",\"zoo\",0],true,false,null,null]}
                                                                     """)
     }
