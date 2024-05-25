@@ -89,6 +89,7 @@ public struct JSONSimpleContentBuilder {
         return Data("null".utf8)
     }
 
+    // this func *can* get called with a nil parameter!
     public static func buildBlock(_ item: Any?) -> Data {
 
         // herus
