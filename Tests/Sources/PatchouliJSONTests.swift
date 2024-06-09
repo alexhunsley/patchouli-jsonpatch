@@ -46,8 +46,8 @@ final class PatchouliJSONTests: XCTestCase {
         }
         let dataResult = try patchedJSONContent.reduced()
         XCTAssertEqual(try dataResult.asString(), """
-                                                                    "alex"
-                                                                    """)
+                                                  "alex"
+                                                  """)
     }
 
     func test_DSL_patchedJSONContent2() throws {
@@ -56,8 +56,8 @@ final class PatchouliJSONTests: XCTestCase {
         }
         let dataResult = try patchedJSONContent.reduced()
         XCTAssertEqual(try dataResult.asString(), """
-                                                                    {"":"alex"}
-                                                                    """)
+                                                  {"":"alex"}
+                                                  """)
     }
 
     func test_DSL_patchedJSONContent3() throws {
@@ -67,8 +67,8 @@ final class PatchouliJSONTests: XCTestCase {
         }
         let dataResult = try patchedJSONContent.reduced()
         XCTAssertEqual(try dataResult.asString(), """
-                                                                    {"new":"mike"}
-                                                                    """)
+                                                  {"new":"mike"}
+                                                  """)
     }
 
     func test_DSL_patchedJSONContent4() throws {
@@ -79,9 +79,9 @@ final class PatchouliJSONTests: XCTestCase {
         }
         let dataResult = try patchedJSONContent.reduced()
         XCTAssertEqual(try dataResult.asString(), """
-                                                                    {"myArray":["mike","alex"]}
-                                                                    """)
-    }
+                                                  {"myArray":["mike","alex"]}
+                                                  """)
+}
 
     // Could add idea of 'addressMap' optional on patcher: if not nil, is applied to all
     // addresses. Similarly for contentMapper. This would allow us to wrap naked content strings in quotes
@@ -108,8 +108,8 @@ final class PatchouliJSONTests: XCTestCase {
         }
         let dataResult = try patchedJSONContent.reduced()
         XCTAssertEqual(try dataResult.asString(), """
-                                                                    {"myArray":["mike",7,1.2,[5,61,[3]],[\"foo\",\"zoo\",0],true,false,null,null]}
-                                                                    """)
+                                                  {"myArray":["mike",7,1.2,[5,61,[3]],[\"foo\",\"zoo\",0],true,false,null,null]}
+                                                  """)
     }
 
     func test_DSL_IfTestOperationFails_thenOriginalJSONISReturned() throws {
@@ -157,8 +157,8 @@ final class PatchouliJSONTests: XCTestCase {
         print("Redoid2 = ", try dataResult.asString())
 
         let expectedJSONData = Data("""
-                                {"myArray":"mike","myArray2":"alex"}
-                                """.utf8)
+                                    {"myArray":"mike","myArray2":"alex"}
+                                    """.utf8)
 
         // TODO change of manual decoding calls to this:
         print("Res:|", try dataResult.asString(), "|")
@@ -180,8 +180,8 @@ final class PatchouliJSONTests: XCTestCase {
         print("Redoid2 = ", try dataResult.asString())
 
         let expectedJSONData = Data("""
-                                {"myArray":"mike","myArray2":"alex"}
-                                """.utf8)
+                                    {"myArray":"mike","myArray2":"alex"}
+                                    """.utf8)
 
         //        print("Res:|", try dataResult.asString(), "|")
         //        print("expectedJSON:|", expectedJSONData.asString(), "|")
@@ -227,13 +227,13 @@ final class PatchouliJSONTests: XCTestCase {
 
         // TODO might be better with this test in core
         let jsonContent = """
-                                  {
-                                      "login_permitted": true,
-                                      "login_count": 17,
-                                      "users": []
-                                  }
+                          {
+                              "login_permitted": true,
+                              "login_count": 17,
+                              "users": []
+                          }
 
-                                  """
+                          """
 
         let expectJSONContent = """
                                 {"users":["alex"],"login_permitted":true,"login_count":17}
