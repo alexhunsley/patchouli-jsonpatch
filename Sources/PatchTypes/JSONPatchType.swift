@@ -1,7 +1,7 @@
 import Foundation
 import PatchouliCore
 import JSONPatch
-import PatchouliDemoAppResources
+//import PatchouliDemoAppResources
 
 // MARK: - DSL primitive that supports JSON Patch (RFC6902)
 //
@@ -144,10 +144,11 @@ public struct JSONPatchType: PatchType {
             let patch = try! JSONPatch(data: madeJSONPatch)
             return try! .literal(patch.apply(to: container.data()))
         },
-        test: { (container: ContentType, value: ContentType, address: String) throws -> Bool in
+        test: { (container: ContentType, value: ContentType, address: String) throws in
             let valueData = try value.data()
             let valueStr = String(decoding: valueData, as: UTF8.self)
 
+            //                                     [{"op": "test", "path": "\(address)", "value": "\(valueStr)"}]
             let madeJSONPatch = Data("""
                                      [{"op": "test", "path": "\(address)", "value": \(valueStr)}]
                                      """.utf8)
@@ -157,20 +158,24 @@ public struct JSONPatchType: PatchType {
 
             let patch = try! JSONPatch(data: madeJSONPatch)
             do {
-                let _ = try patch.apply(to: container)
-                return true
+                return try .literal(patch.apply(to: container.data()))
+//                return true
             }
-            catch {
-                // NB if test fails, then the patch as a whole should not apply!
-                // this shouldn't actually throw an error! It's just for not applying the patch.
-                //
-                // Hmm. My whole approach is doing each step as its own json_patch, but I should be gathering into
-                // one piece?
-                // So reduce should build up a collection of commands, NOT the actual result!
-                return false
+            catch let error {
+                print("\(error)")
+                // must throw, not ret changed content!
+//                return container
+                throw PatchouliError<JSONPatchType>.testFailed(container, address, value)
+//                // NB if test fails, then the patch as a whole should not apply!
+//                // this shouldn't actually throw an error! It's just for not applying the patch.
+//                //
+//                // Hmm. My whole approach is doing each step as its own json_patch, but I should be gathering into
+//                // one piece?
+//                // So reduce should build up a collection of commands, NOT the actual result!
+////                return false
             }
         }
-    )
+    )// [{"op": "test", "path": "/myArray", "value": []}]
 
     // TODO use our helper, rather than utf8 directly, then can kill the above utf8Data helper?
     // -- hmm, issues.

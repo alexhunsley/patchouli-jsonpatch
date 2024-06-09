@@ -3,6 +3,13 @@ import XCTest
 @testable import PatchouliCore
 @testable import PatchouliJSON
 
+//
+// [ ] write test for TEST op - initially failing, of course
+// [ ] impl test failure in reducer -- i.e. fail = we don't apply any changes (in-place reducer would have to work on
+//     a copy for this, until we know ok! Optimisation: might not bother with making the copy if no TEST op
+//     is seen in the list of items (we could check before any processing)
+//
+
 final class PatchouliJSONTests: XCTestCase {
 
     // MARK: - JSON Patch spec instantiation (DSL)
@@ -82,19 +89,19 @@ final class PatchouliJSONTests: XCTestCase {
     func test_DSL_patchedJSONContent5() throws {
         let someDouble = 1.2
 
-//        let patchedJSONContent: PatchedJSON = Content(JSONPatchType.emptyContent) {
+        //        let patchedJSONContent: PatchedJSON = Content(JSONPatchType.emptyContent) {
 
         // why not just make JSONObject an anlias for patchedJSONContent as per below?
-//        let patchedJSONContent: JSONContent = JSONObject {
+        //        let patchedJSONContent: JSONContent = JSONObject {
         let patchedJSONContent = JSONObject {
-//            public func Add(address: String,
-//                            @JSONSimpleContentBuilder jsonContent: () -> Data,
-//                            @AddressedPatchItemsBuilder<JSONPatchType> patchedBy patchItems: PatchListProducer<JSONPatchType> = { AddressedPatch.emptyPatchList })
-//                        -> JSONPatchItem {
+            //            public func Add(address: String,
+            //                            @JSONSimpleContentBuilder jsonContent: () -> Data,
+            //                            @AddressedPatchItemsBuilder<JSONPatchType> patchedBy patchItems: PatchListProducer<JSONPatchType> = { AddressedPatch.emptyPatchList })
+            //                        -> JSONPatchItem {
 
 
             Add(address: "/myArray", simpleContent: JSONPatchType.emptyArrayContent)
-//            Add(address: "/myArray", simpleContent: JSONPatchType.emptyObjectContent)
+            //            Add(address: "/myArray", simpleContent: JSONPatchType.emptyObjectContent)
             Add(address: "/myArray/-", jsonContent: "mike") // this works with manual quotes
             Add(address: "/myArray/-", jsonContent: 7)
             Add(address: "/myArray/-", jsonContent: someDouble)
@@ -104,19 +111,67 @@ final class PatchouliJSONTests: XCTestCase {
             // TODO problematic! '[nil]' or '[null]' becomes '[]' due to a filtering step.
             // One approach is to not make null a var for .nil directly, but
             // keep it as something more abstract for later changing.
-//            Add(address: "/myArray/-", jsonContent: [null])
+            //            Add(address: "/myArray/-", jsonContent: [null])
             Add(address: "/myArray/-", jsonContent: true)
             Add(address: "/myArray/-", jsonContent: false)
             Add(address: "/myArray/-", jsonContent: nil)  // becomes 'null'
             Add(address: "/myArray/-", jsonContent: null) // becomes 'null'
 
-//            Add(address: "/myArray/0", simpleContent: "\"alex\"".utf8Data)
+            //            Add(address: "/myArray/0", simpleContent: "\"alex\"".utf8Data)
             // note how we use the simpleString helper here: it adds the quotes into the string and calls .utf8 for us
-//            Add(address: "/myArray/0", simpleString: "bob")
+            //            Add(address: "/myArray/0", simpleString: "bob")
         }
         let dataResult = try patchedJSONContent.reduced()
         XCTAssertEqual(String(decoding: try dataResult.data(), as: UTF8.self), """
                                                                     {"myArray":["mike",7,1.2,[5,61,[3]],[\"foo\",\"zoo\",0],true,false,null,null]}
                                                                     """)
+    }
+
+    func test_DSL_IfTestOperationFails_thenOriginalJSONISReturned() throws {
+        // NB operation failure doesn't throw an error to here,
+        // it just returns the original content without patching
+        let patchedJSONContent = JSONObject {
+            Add(address: "/myArray", simpleContent: JSONPatchType.emptyArrayContent)
+            Add(address: "/myArray/-", jsonContent: "mike")
+            Test(address: "/doesNotExist", expectedSimpleContent: JSONPatchType.emptyArrayContent)
+        }
+        let dataResult = try patchedJSONContent.reduced()
+        print("Redoid1 = ", String(decoding: try dataResult.data(), as: UTF8.self))
+
+        // we expect the empty JSONObject to be returned, as the test will fail.
+        // meaning no patching should take place
+        try XCTAssertEqual(dataResult.data(), JSONPatchType.emptyObjectContent.data())
+    }
+
+    func test_DSL_ifTestOperationSucceeds_thenPatchedJSONISReturned() throws {
+        let patchedJSONContent = JSONObject {
+//            Add(address: "/myArray", simpleContent: JSONPatchType.emptyArrayContent)
+            Add(address: "/myArray", jsonContent: "mike")
+
+            // TODO herus - make a version that can take jsonContent: param like the others
+            // ok so need the quotes here on a literal string
+//            Test(address: "/myArray", expectedContent: .literal("\"mike\"".utf8Data))
+            Test(address: "/myArray", jsonContent: "mike")
+
+//            jsonContent jsonContentClosure: @autoclosure @escaping () -> Any?,
+//            let retValueData = applyBuilder(jsonContentClosure)
+
+        }
+        let dataResult = try patchedJSONContent.reduced()
+
+        // this shoud contain mike! It's coming back empty, we're testing wrong thing below.
+        print("Redoid2 = ", String(decoding: try dataResult.data(), as: UTF8.self))
+
+        let expectedJSON = Data("""
+                                {"myArray":"mike"}
+                                """.utf8)
+
+//        let madeJSONPatch = Data("""
+//                                 [{"op": "add", "path": "\(address)", "value": \(additionStr)}]
+//                                 """.utf8)
+
+        // we expect the empty JSONObject to be returned, as the test will fail.
+        // meaning no patching should take place
+        try XCTAssertEqual(dataResult.data(), expectedJSON) // JSONPatchType.emptyObjectContent.data())
     }
 }

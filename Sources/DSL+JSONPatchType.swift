@@ -58,6 +58,36 @@ public func Add(address: String,
 //                                    contentPatches: patchItems()))
 }
 
+// TODO add test here that does applybuilder!
+
+
+// herus
+
+//public func Test<T: PatchType>(address: T.AddressType,
+//                               jsonContent jsonContentClosure: @autoclosure @escaping () -> Any?)
+//        -> AddressedPatch<T> {
+//
+//    let retValueData = applyBuilder(jsonContentClosure)
+//
+//    return Test(address: address,
+//                expectedContent: PatchedJSON(content: .literal(retValueData),
+//                                             jsonContent: patchItems()))
+//
+////    return AddressedPatch(patchSpec: .test(.literal(retValueData), address),
+////           contentPatch: PatchedContent(content: retValueData))
+//}
+
+
+//                           public func Test<T: PatchType>(address: T.AddressType,
+//                                                          expectedContent: T.ContentType)
+//                                   -> AddressedPatch<T> {
+//
+//                               AddressedPatch(patchSpec: .test(expectedContent, address),
+//                                              contentPatch: PatchedContent(content: expectedContent))
+//                           }
+
+
+
 
 public func Replace(address: String,
                 jsonContent jsonContentClosure: @autoclosure @escaping () -> Any?,
@@ -70,6 +100,20 @@ public func Replace(address: String,
                    withContent: PatchedJSON(content: .literal(retValueData),
                                             contentPatches: patchItems()))
 }
+
+// herus
+
+public func Test(address: String,
+                 jsonContent jsonContentClosure: @autoclosure @escaping () -> Any?,
+                 @AddressedPatchItemsBuilder<JSONPatchType> patchedBy patchItems: PatchListProducer<JSONPatchType> = { AddressedPatch.emptyPatchList })
+        -> JSONPatchItem {
+
+    let retValueData = applyBuilder(jsonContentClosure)
+
+    return Test(address: address, expectedSimpleContent: .literal(retValueData))
+}
+
+// TODO Can we use the expression builder to remove need for alt versions of methods?
 
 @resultBuilder
 public struct JSONSimpleContentBuilder {
