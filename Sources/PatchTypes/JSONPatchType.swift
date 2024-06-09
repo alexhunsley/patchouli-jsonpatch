@@ -22,40 +22,24 @@ extension String {
     public var utf8Data: Data { Data(self.utf8) }
 }
 
-//public enum ContentIdea<T: PatchType> {
-//    case literal(T.ContentType)
-//    case fileURL(URL)
-//    case bundleResource(String)
-//
-//    var data: T.ContentType {
-//        // TODO get it
-//        Data()
-//    }
-//}
-
 public enum JSONContent {
     case literal(Data)
     case fileURL(URL)
     case bundleResource(Bundle, String)
 
-    // herus
     public func data() throws -> Data {
         switch self {
         case let .literal(data):
             return data
         case let .bundleResource(bundle, bundleResourceName):
             // maybe do caching later? if feeling excessive. prolly OTT though
-
-//            guard let fileURL = Bundle.main.url(forResource: bundleResourceName, withExtension: "json") else {
             guard let fileURL = bundle.url(forResource: bundleResourceName, withExtension: "json") else {
-                // TODO throw
                 assertionFailure("Didn't find the json resource")
                 return Data()
             }
             return try Data(contentsOf: fileURL)
-        default:
-            assertionFailure("Implement this")
-            return Data()
+        case let .fileURL(fileURL):
+            return try Data(contentsOf: fileURL)
         }
     }
 
@@ -101,12 +85,12 @@ public struct JSONPatchType: PatchType {
     /// The Protocol Witness used by the reducer
     static public var patcher = Patchable<JSONPatchType>(
         added: { (container: ContentType, addition: ContentType, address: String) throws -> ContentType in
-            let additionStr = String(decoding: try addition.data(), as: UTF8.self)
-            let madeJSONPatch = Data("""
+            let additionStr = try addition.asString()
+            let madeJSONPatchData = Data("""
                                      [{"op": "add", "path": "\(address)", "value": \(additionStr)}]
                                      """.utf8)
-            print(String(decoding: madeJSONPatch, as: UTF8.self))
-            let patch = try! JSONPatch(data: madeJSONPatch)
+            print(madeJSONPatchData.asString())
+            let patch = try! JSONPatch(data: madeJSONPatchData)
 
             let x = try container.data()
             print("Data = \(x)")
@@ -115,48 +99,48 @@ public struct JSONPatchType: PatchType {
             return try! .literal(patch.apply(to: container.data()))
         },
         removed: { (container: ContentType, address: String) -> ContentType in
-            let madeJSONPatch = Data("""
+            let madeJSONPatchData = Data("""
                                      [{"op": "remove", "path": "\(address)"}]
                                      """.utf8)
-            let patch = try! JSONPatch(data: madeJSONPatch)
+            let patch = try! JSONPatch(data: madeJSONPatchData)
             return try! .literal(patch.apply(to: container.data()))
         },
         replaced: { (container: ContentType, replacement: ContentType, address: String) throws -> ContentType in
-            let replacementStr = String(decoding: try replacement.data(), as: UTF8.self)
+            let replacementStr = try replacement.asString()
 
-            let madeJSONPatch = Data("""
+            let madeJSONPatchData = Data("""
                                      [{"op": "replace", "path": "\(address)", "value": \(replacementStr)}]
                                      """.utf8)
-            let patch = try! JSONPatch(data: madeJSONPatch)
+            let patch = try! JSONPatch(data: madeJSONPatchData)
             return try! .literal(patch.apply(to: container.data()))
         },
         copied: { (container: ContentType, fromAddress: String, toAddress: String) throws in
-            let madeJSONPatch = Data("""
+            let madeJSONPatchData = Data("""
                                      [{"op": "copy", "from": "\(fromAddress)", "path": "\(toAddress)"}]
                                      """.utf8)
-            let patch = try! JSONPatch(data: madeJSONPatch)
+            let patch = try! JSONPatch(data: madeJSONPatchData)
             return try! .literal(patch.apply(to: container.data()))
         },
         moved: { (container: ContentType, fromAddress: String, toAddress: String) throws in
-            let madeJSONPatch = Data("""
+            let madeJSONPatchData = Data("""
                                      [{"op": "move", "from": "\(fromAddress)", "path": "\(toAddress)"}]
                                      """.utf8)
-            let patch = try! JSONPatch(data: madeJSONPatch)
+            let patch = try! JSONPatch(data: madeJSONPatchData)
             return try! .literal(patch.apply(to: container.data()))
         },
         test: { (container: ContentType, value: ContentType, address: String) throws in
             let valueData = try value.data()
-            let valueStr = String(decoding: valueData, as: UTF8.self)
+            let valueStr = valueData.asString()
 
             //                                     [{"op": "test", "path": "\(address)", "value": "\(valueStr)"}]
-            let madeJSONPatch = Data("""
+            let madeJSONPatchData = Data("""
                                      [{"op": "test", "path": "\(address)", "value": \(valueStr)}]
                                      """.utf8)
 
-            print("Container: \(String(decoding: try container.data(), as: UTF8.self))")
-            print(String(decoding: madeJSONPatch, as: UTF8.self))
+            print("Container: \(try container.asString())")
+            print(madeJSONPatchData.asString())
 
-            let patch = try! JSONPatch(data: madeJSONPatch)
+            let patch = try! JSONPatch(data: madeJSONPatchData)
             do {
                 return try .literal(patch.apply(to: container.data()))
 //                return true
@@ -184,25 +168,5 @@ public struct JSONPatchType: PatchType {
     static public var emptyObjectContent: JSONContent = .literal("{}".utf8Data)
     static public var emptyArrayContent: JSONContent = .literal("[]".utf8Data)
 
-
-//    static public var emptyContent = emptyObjectContent
     public static var emptyContent: JSONContent = emptyObjectContent
-
-    // with json and strings, inout doesn't make much practical sense,
-    // but for demonstration purposes.
-//    static public var mutatingPatcher: MutatingPatchable<JSONPatchType>? = .init(
-//        replace: { (container: inout Data, replacement: Data, address: String) -> Void in
-//            let replacementStr = String(decoding: replacement, as: UTF8.self)
-//
-//            let madeJSONPatch = Data("""
-//                                     [{"op": "replace", "path": "\(address)", "value": \(replacementStr)}]
-//                                     """.utf8)
-//
-////            print(String(decoding: madeJSONPatch, as: UTF8.self))
-//
-//            // this is an inout func, but we're not generating result directly as inout, note!
-//            let patch = try! JSONPatch(data: madeJSONPatch)
-//            container = try! patch.apply(to: container)
-//        }
-//    )
 }

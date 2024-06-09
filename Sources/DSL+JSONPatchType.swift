@@ -8,7 +8,7 @@
 import Foundation
 import PatchouliCore
 
-// TODO nicer way to do this
+// TODO nicer way to do this?
 @JSONSimpleContentBuilder func applyBuilder(_ jsonContentClosure: () -> Any?) -> Data {
     jsonContentClosure()
 }
@@ -58,37 +58,6 @@ public func Add(address: String,
 //                                    contentPatches: patchItems()))
 }
 
-// TODO add test here that does applybuilder!
-
-
-// herus
-
-//public func Test<T: PatchType>(address: T.AddressType,
-//                               jsonContent jsonContentClosure: @autoclosure @escaping () -> Any?)
-//        -> AddressedPatch<T> {
-//
-//    let retValueData = applyBuilder(jsonContentClosure)
-//
-//    return Test(address: address,
-//                expectedContent: PatchedJSON(content: .literal(retValueData),
-//                                             jsonContent: patchItems()))
-//
-////    return AddressedPatch(patchSpec: .test(.literal(retValueData), address),
-////           contentPatch: PatchedContent(content: retValueData))
-//}
-
-
-//                           public func Test<T: PatchType>(address: T.AddressType,
-//                                                          expectedContent: T.ContentType)
-//                                   -> AddressedPatch<T> {
-//
-//                               AddressedPatch(patchSpec: .test(expectedContent, address),
-//                                              contentPatch: PatchedContent(content: expectedContent))
-//                           }
-
-
-
-
 public func Replace(address: String,
                 jsonContent jsonContentClosure: @autoclosure @escaping () -> Any?,
                 @AddressedPatchItemsBuilder<JSONPatchType> patchedBy patchItems: PatchListProducer<JSONPatchType> = { AddressedPatch.emptyPatchList })
@@ -100,8 +69,6 @@ public func Replace(address: String,
                    withContent: PatchedJSON(content: .literal(retValueData),
                                             contentPatches: patchItems()))
 }
-
-// herus
 
 public func Test(address: String,
                  jsonContent jsonContentClosure: @autoclosure @escaping () -> Any?,
@@ -136,17 +103,19 @@ public struct JSONSimpleContentBuilder {
     // this func *can* get called with a nil parameter!
     public static func buildBlock(_ item: Any?) -> Data {
 
-        // herus
-        if let contentIdea = item as? JSONContent {
-            switch contentIdea {
-            case let .literal(data):
-                return data
-            default:
-                assertionFailure("Impl me 4")
-                return Data()
-            }
-        }
+        // TODO tests still pass with this commented out.
+        // Was I just allowing JSONContent as an expression?
+//        if let contentIdea = item as? JSONContent {
+//            switch contentIdea {
+//            case let .literal(data):
+//                return data
+//            default:
+//                assertionFailure("Impl me 4")
+//                return Data()
+//            }
+//        }
 
+        // TODO ensure we're doing everything just like JSONPatch does with similar `Any`
         if let str = item as? String {
             let enquotedString = "\"" + str + "\""
             return Data(enquotedString.utf8)
@@ -161,7 +130,7 @@ public struct JSONSimpleContentBuilder {
         }
 
         if let array = item as? any Sequence {
-            let items = array.map { String(decoding: buildBlock($0), as: UTF8.self) }
+            let items = array.map { buildBlock($0).asString() }
             let seqAsStr = "[" + items.joined(separator: ",") + "]"
             return seqAsStr.utf8Data
         }
