@@ -183,8 +183,8 @@ final class PatchouliJSONTests: XCTestCase {
                                 {"myArray":"mike","myArray2":"alex"}
                                 """.utf8)
 
-//        print("Res:|", try dataResult.asString(), "|")
-//        print("expectedJSON:|", expectedJSONData.asString(), "|")
+        //        print("Res:|", try dataResult.asString(), "|")
+        //        print("expectedJSON:|", expectedJSONData.asString(), "|")
         // we expect the empty JSONObject to be returned, as the test will fail.
         // meaning no patching should take place
 
@@ -193,19 +193,99 @@ final class PatchouliJSONTests: XCTestCase {
 
     // need to depend on framework holder to use this, or have own bundle
     func testBundleLoading() throws {
-//        let (fileData, fileURL) = make
-//        let url = Bundle.main.url(forResource: "UserList", withExtension: "json")
+        //        let (fileData, fileURL) = make
+        //        let url = Bundle.main.url(forResource: "UserList", withExtension: "json")
 
+        // TODO might be better with this test in core
         let expectedJSONContent = """
                                   {
                                       "login_permitted": true,
                                       "login_count": 17,
                                       "users": []
                                   }
-                                  
+
                                   """
 
-        let content = JSONContent.bundleResource(Bundle(for: Self.self), "UserList")
-        XCTAssertEqual(try content.asString(), expectedJSONContent)
+        let expectJSONContent = """
+                                {"users":["alex"],"login_permitted":true,"login_count":17}
+                                """
+
+        let bundleContent = JSONContent.bundleResource(Bundle(for: Self.self), "UserList")
+        XCTAssertEqual(try bundleContent.asString(), expectedJSONContent)
+
+        let patchedJSONContent: PatchedJSON = Content(bundleContent) {
+            Add(address: "/users/-", jsonContent: "alex")
+        }
+
+        XCTAssertEqual(try patchedJSONContent.reduced().asString(), expectJSONContent)
+
+    }
+
+    func testFileLoading() throws {
+        //        let (fileData, fileURL) = make
+        //        let url = Bundle.main.url(forResource: "UserList", withExtension: "json")
+
+        // TODO might be better with this test in core
+        let jsonContent = """
+                                  {
+                                      "login_permitted": true,
+                                      "login_count": 17,
+                                      "users": []
+                                  }
+
+                                  """
+
+        let expectJSONContent = """
+                                {"users":["alex"],"login_permitted":true,"login_count":17}
+                                """
+
+        let tempFileURL = try XCTUnwrap(createTemporaryFile(withContent: jsonContent))
+
+        defer {
+            deleteTemporaryFile(at: tempFileURL)
+        }
+
+        let fileContent = JSONContent.fileURL(tempFileURL)
+
+        print("Temp file: \(tempFileURL)")
+        XCTAssertEqual(try fileContent.asString(), jsonContent)
+
+        let patchedJSONContent: PatchedJSON = Content(fileContent) {
+            Add(address: "/users/-", jsonContent: "alex")
+        }
+
+        XCTAssertEqual(try patchedJSONContent.reduced().asString(), expectJSONContent)
+    }
+}
+
+// MARK: - Helpers
+
+extension XCTestCase {
+    // Function to create a temporary file with some content
+    func createTemporaryFile(withContent content: String) -> URL? {
+        // Get the path to the temporary directory
+        let tempDirectory = NSTemporaryDirectory()
+
+        // Create a unique file name using UUID
+        let fileName = UUID().uuidString
+        let filePath = tempDirectory.appending("/\(fileName)")
+        let fileURL = URL(fileURLWithPath: filePath)
+
+        // Write content to the file
+        do {
+            try content.write(to: fileURL, atomically: true, encoding: .utf8)
+            return fileURL
+        } catch {
+            XCTFail("Failed to write to temporary file: \(error)")
+            return nil
+        }
+    }
+
+    func deleteTemporaryFile(at url: URL) {
+        do {
+            try FileManager.default.removeItem(at: url)
+        } catch {
+            XCTFail("Failed to delete temporary file: \(error)")
+        }
     }
 }
