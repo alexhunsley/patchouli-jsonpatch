@@ -145,33 +145,84 @@ final class PatchouliJSONTests: XCTestCase {
 
     func test_DSL_ifTestOperationSucceeds_thenPatchedJSONISReturned() throws {
         let patchedJSONContent = JSONObject {
-//            Add(address: "/myArray", simpleContent: JSONPatchType.emptyArrayContent)
+            //            Add(address: "/myArray", simpleContent: JSONPatchType.emptyArrayContent)
             Add(address: "/myArray", jsonContent: "mike")
 
             // TODO herus - make a version that can take jsonContent: param like the others
             // ok so need the quotes here on a literal string
-//            Test(address: "/myArray", expectedContent: .literal("\"mike\"".utf8Data))
+            //            Test(address: "/myArray", expectedContent: .literal("\"mike\"".utf8Data))
             Test(address: "/myArray", jsonContent: "mike")
 
-//            jsonContent jsonContentClosure: @autoclosure @escaping () -> Any?,
-//            let retValueData = applyBuilder(jsonContentClosure)
+            //            jsonContent jsonContentClosure: @autoclosure @escaping () -> Any?,
+            //            let retValueData = applyBuilder(jsonContentClosure)
 
         }
         let dataResult = try patchedJSONContent.reduced()
 
-        // this shoud contain mike! It's coming back empty, we're testing wrong thing below.
         print("Redoid2 = ", String(decoding: try dataResult.data(), as: UTF8.self))
 
         let expectedJSON = Data("""
                                 {"myArray":"mike"}
                                 """.utf8)
 
-//        let madeJSONPatch = Data("""
-//                                 [{"op": "add", "path": "\(address)", "value": \(additionStr)}]
-//                                 """.utf8)
+        //        let madeJSONPatch = Data("""
+        //                                 [{"op": "add", "path": "\(address)", "value": \(additionStr)}]
+        //                                 """.utf8)
 
         // we expect the empty JSONObject to be returned, as the test will fail.
         // meaning no patching should take place
         try XCTAssertEqual(dataResult.data(), expectedJSON) // JSONPatchType.emptyObjectContent.data())
+    }
+
+    func test_DSL_ifTestOperationIsNotLastAndFails_thenOriginalJSONISReturned() throws {
+        let patchedJSONContent = JSONObject {
+            Add(address: "/myArray", jsonContent: "mike")
+            Test(address: "/myArray", jsonContent: "horse")
+            Add(address: "/myArray2", jsonContent: "alex")
+        }
+        let dataResult = try patchedJSONContent.reduced()
+
+        print("Redoid2 = ", String(decoding: try dataResult.data(), as: UTF8.self))
+
+        let expectedJSONData = Data("""
+                                {"myArray":"mike","myArray2":"alex"}
+                                """.utf8)
+
+        // TODO change of manual decoding calls to this:
+        print("Res:|", try dataResult.asString(), "|")
+        print("expectedJSON:|", expectedJSONData.asString(), "|")
+        // we expect the empty JSONObject to be returned, as the test will fail.
+        // meaning no patching should take place
+
+        try XCTAssertEqual(dataResult.data(), JSONPatchType.emptyObjectContent.data())
+    }
+
+    func test_DSL_ifTestOperationIsNotLastAndSucceeds_thenPatchedJSONISReturned() throws {
+        let patchedJSONContent = JSONObject {
+            Add(address: "/myArray", jsonContent: "mike")
+            Test(address: "/myArray", jsonContent: "mike")
+            Add(address: "/myArray2", jsonContent: "alex")
+        }
+        let dataResult = try patchedJSONContent.reduced()
+
+        print("Redoid2 = ", String(decoding: try dataResult.data(), as: UTF8.self))
+
+        let expectedJSONData = Data("""
+                                {"myArray":"mike","myArray2":"alex"}
+                                """.utf8)
+
+        // TODO change of manual decoding calls to this:
+        print("Res:|", try dataResult.asString(), "|")
+        print("expectedJSON:|", expectedJSONData.asString(), "|")
+        // we expect the empty JSONObject to be returned, as the test will fail.
+        // meaning no patching should take place
+
+        try XCTAssertEqual(dataResult.data(), expectedJSONData) // JSONPatchType.emptyObjectContent.data())
+    }
+}
+
+extension Data {
+    func asString() -> String {
+        String(decoding: self, as: UTF8.self)
     }
 }
