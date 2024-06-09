@@ -190,4 +190,22 @@ final class PatchouliJSONTests: XCTestCase {
 
         try XCTAssertEqual(dataResult.data(), expectedJSONData) // JSONPatchType.emptyObjectContent.data())
     }
+
+    // need to depend on framework holder to use this, or have own bundle
+    func testBundleLoading() throws {
+//        let (fileData, fileURL) = make
+//        let url = Bundle.main.url(forResource: "UserList", withExtension: "json")
+
+        let expectedJSONContent = """
+                                  {
+                                      "login_permitted": true,
+                                      "login_count": 17,
+                                      "users": []
+                                  }
+                                  
+                                  """
+
+        let content = JSONContent.bundleResource(Bundle(for: Self.self), "UserList")
+        XCTAssertEqual(try content.asString(), expectedJSONContent)
+    }
 }

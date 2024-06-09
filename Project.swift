@@ -24,8 +24,8 @@ let project = Project(
             product: .unitTests,
             bundleId: "io.tuist.PatchouliJSONTests",
             infoPlist: .default,
-            sources: ["Tests/**"],
-            resources: [],
+            sources: ["Tests/Sources/**"],
+            resources: ["Tests/Resources/**"],
             dependencies: [.target(name: "PatchouliJSON")]
         ),
     ]
