@@ -21,28 +21,6 @@ public func JSONArray(@AddressedPatchItemsBuilder<JSONPatchType> patchedBy patch
     Content(JSONPatchType.emptyArrayContent, patchedBy: patchItems)
 }
 
-//public func Content<T: PatchType>(_ content: T.ContentType,
-//                                  @AddressedPatchItemsBuilder<T> patchedBy patchItems: PatchListProducer<T> = { AddressedPatch.emptyPatchList })
-//        -> PatchedContent<T> {
-//
-//    PatchedContent(content: content, contentPatches: patchItems())
-//}
-
-// makeContent?
-//public func Content<T: PatchType>(_ content: T.ContentType,
-//                                  patchList: [AddressedPatch<T>])
-//        -> PatchedContent<T> {
-//
-//    PatchedContent(content: content, contentPatches: patchList)
-//}
-
-// We want to do loading sensibly? Don't load same thing twice, cache it somehow.
-// So user can just use the two above without worrying about efficiency? hmm a bit magical...
-// but we don't want to load data from a file if it's not even used!
-// but if user declares that content ahead of time, and uses it in multiple places, it won't
-// load until actually called (and can cache).
-// Need to warn user if there's a gotcha like this.
-
 // convenience for resource loading from bundle
 public func Content(resource resourceID: String,
                     bundle: Bundle,

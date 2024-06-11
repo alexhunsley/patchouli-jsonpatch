@@ -3,13 +3,6 @@ import XCTest
 @testable import PatchouliCore
 @testable import PatchouliJSON
 
-//
-// [ ] write test for TEST op - initially failing, of course
-// [ ] impl test failure in reducer -- i.e. fail = we don't apply any changes (in-place reducer would have to work on
-//     a copy for this, until we know ok! Optimisation: might not bother with making the copy if no TEST op
-//     is seen in the list of items (we could check before any processing)
-//
-
 final class PatchouliJSONTests: XCTestCase {
 
     // MARK: - JSON Patch spec instantiation (DSL)
@@ -81,11 +74,8 @@ final class PatchouliJSONTests: XCTestCase {
         XCTAssertEqual(try dataResult.asString(), """
                                                   {"myArray":["mike","alex"]}
                                                   """)
-}
+    }
 
-    // Could add idea of 'addressMap' optional on patcher: if not nil, is applied to all
-    // addresses. Similarly for contentMapper. This would allow us to wrap naked content strings in quotes
-    // as a convenience.
     func test_DSL_patchedJSONContent5() throws {
         let someDouble = 1.2
 
@@ -111,6 +101,8 @@ final class PatchouliJSONTests: XCTestCase {
                                                   {"myArray":["mike",7,1.2,[5,61,[3]],[\"foo\",\"zoo\",0],true,false,null,null]}
                                                   """)
     }
+
+    // MARK: - 'Test' operation tests
 
     func test_DSL_IfTestOperationFails_thenOriginalJSONISReturned() throws {
         // NB operation failure doesn't throw an error to here,
@@ -177,19 +169,17 @@ final class PatchouliJSONTests: XCTestCase {
         }
         let dataResult = try patchedJSONContent.reduced()
 
-        print("Redoid2 = ", try dataResult.asString())
-
         let expectedJSONData = Data("""
                                     {"myArray":"mike","myArray2":"alex"}
                                     """.utf8)
 
-        //        print("Res:|", try dataResult.asString(), "|")
-        //        print("expectedJSON:|", expectedJSONData.asString(), "|")
-        // we expect the empty JSONObject to be returned, as the test will fail.
-        // meaning no patching should take place
+        // we expect the empty JSONObject to be returned, as the test will fail
+        // and hence patching won't happen.
 
-        try XCTAssertEqual(dataResult.data(), expectedJSONData) // JSONPatchType.emptyObjectContent.data())
+        try XCTAssertEqual(dataResult.data(), expectedJSONData)
     }
+
+    // MARK: - Bundle and file URL loading tests
 
     // need to depend on framework holder to use this, or have own bundle
     func testBundleLoading_helper() throws {
@@ -210,7 +200,6 @@ final class PatchouliJSONTests: XCTestCase {
 
         // herus - nicer way than Self.self? Bundle.main ain't it!
         let bundleContent = JSONContent.bundleResource(Bundle(for: Self.self), "UserList")
-//        let bundleContent = JSONContent.bundleResource(Bundle.main, "UserList")
 
         let expectJSONContent = """
                                 {"users":["alex"],"login_permitted":true,"login_count":17}
