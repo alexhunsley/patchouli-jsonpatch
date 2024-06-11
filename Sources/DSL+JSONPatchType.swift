@@ -36,26 +36,43 @@ public func JSONArray(@AddressedPatchItemsBuilder<JSONPatchType> patchedBy patch
 //    PatchedContent(content: content, contentPatches: patchList)
 //}
 
+// We want to do loading sensibly? Don't load same thing twice, cache it somehow.
+// So user can just use the two above without worrying about efficiency? hmm a bit magical...
+// but we don't want to load data from a file if it's not even used!
+// but if user declares that content ahead of time, and uses it in multiple places, it won't
+// load until actually called (and can cache).
+// Need to warn user if there's a gotcha like this.
+
+// convenience for resource loading from bundle
+public func Content(resource resourceID: String,
+                    bundle: Bundle,
+                    @AddressedPatchItemsBuilder<JSONPatchType> patchedBy patchItems: PatchListProducer<JSONPatchType> = { AddressedPatch.emptyPatchList })
+        -> PatchedContent<JSONPatchType> {
+
+     PatchedContent(content: JSONContent.bundleResource(bundle, resourceID),
+                   contentPatches: patchItems())
+}
+
+// convenience for loading from file
+public func Content(fileURL: URL,
+                    @AddressedPatchItemsBuilder<JSONPatchType> patchedBy patchItems: PatchListProducer<JSONPatchType> = { AddressedPatch.emptyPatchList })
+        -> PatchedContent<JSONPatchType> {
+
+    PatchedContent(content: JSONContent.fileURL(fileURL),
+                   contentPatches: patchItems())
+}
+
+
 public func Add(address: String,
                 jsonContent jsonContentClosure: @autoclosure @escaping () -> Any?,
-//                jsonContent: Any?,
                 @AddressedPatchItemsBuilder<JSONPatchType> patchedBy patchItems: PatchListProducer<JSONPatchType> = { AddressedPatch.emptyPatchList })
             -> JSONPatchItem {
 
-//    @JSONSimpleContentBuilder var goob: Data = { jsonContent }()
-
     let retValueData = applyBuilder(jsonContentClosure)
-//    print("jsonCont: \(String(decoding: retValueData, as: UTF8.self))")
 
     return Add(address: address,
                content: PatchedJSON(content: .literal(retValueData),
                                     contentPatches: patchItems()))
-
-    // alt version thart uses JSONContent.make - means we don't need the autoclosure for caller of this.
-                // hmm, problems with double quoting! come back to this idea
-//    return Add(address: address,
-//               content: PatchedJSON(content: JSONContent.make(jsonContent),
-//                                    contentPatches: patchItems()))
 }
 
 public func Replace(address: String,
@@ -84,9 +101,6 @@ public func Test(address: String,
 
 @resultBuilder
 public struct JSONSimpleContentBuilder {
-    // If we can use variadics, we're not prone to the "<= 10 items" limitation seen
-    // in SwiftUI (due to needing implementation by lots of funcs to match all possible param counts)
-
     // empty block to empty list
     public static func buildBlock() -> Data {
         Data("".utf8)

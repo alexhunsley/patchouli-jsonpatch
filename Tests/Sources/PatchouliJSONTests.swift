@@ -192,26 +192,29 @@ final class PatchouliJSONTests: XCTestCase {
     }
 
     // need to depend on framework holder to use this, or have own bundle
-    func testBundleLoading() throws {
-        //        let (fileData, fileURL) = make
-        //        let url = Bundle.main.url(forResource: "UserList", withExtension: "json")
-
+    func testBundleLoading_helper() throws {
         // TODO might be better with this test in core
-        let expectedJSONContent = """
-                                  {
-                                      "login_permitted": true,
-                                      "login_count": 17,
-                                      "users": []
-                                  }
-
-                                  """
-
         let expectJSONContent = """
                                 {"users":["alex"],"login_permitted":true,"login_count":17}
                                 """
 
+        let patchedJSONContent: PatchedJSON = Content(resource: "UserList", bundle: Bundle(for: Self.self)) {
+            Add(address: "/users/-", jsonContent: "alex")
+        }
+
+        XCTAssertEqual(try patchedJSONContent.reduced().asString(), expectJSONContent)
+    }
+
+    func testBundleLoading_manual() throws {
+        // TODO might be better with this test in core
+
+        // herus - nicer way than Self.self? Bundle.main ain't it!
         let bundleContent = JSONContent.bundleResource(Bundle(for: Self.self), "UserList")
-        XCTAssertEqual(try bundleContent.asString(), expectedJSONContent)
+//        let bundleContent = JSONContent.bundleResource(Bundle.main, "UserList")
+
+        let expectJSONContent = """
+                                {"users":["alex"],"login_permitted":true,"login_count":17}
+                                """
 
         let patchedJSONContent: PatchedJSON = Content(bundleContent) {
             Add(address: "/users/-", jsonContent: "alex")
@@ -221,10 +224,7 @@ final class PatchouliJSONTests: XCTestCase {
 
     }
 
-    func testFileLoading() throws {
-        //        let (fileData, fileURL) = make
-        //        let url = Bundle.main.url(forResource: "UserList", withExtension: "json")
-
+    func testFileLoading_manual() throws {
         // TODO might be better with this test in core
         let jsonContent = """
                           {
@@ -235,15 +235,15 @@ final class PatchouliJSONTests: XCTestCase {
 
                           """
 
-        let expectJSONContent = """
-                                {"users":["alex"],"login_permitted":true,"login_count":17}
-                                """
-
         let tempFileURL = try XCTUnwrap(createTemporaryFile(withContent: jsonContent))
 
         defer {
             deleteTemporaryFile(at: tempFileURL)
         }
+
+        let expectJSONContent = """
+                                {"users":["alex"],"login_permitted":true,"login_count":17}
+                                """
 
         let fileContent = JSONContent.fileURL(tempFileURL)
 
@@ -251,6 +251,34 @@ final class PatchouliJSONTests: XCTestCase {
         XCTAssertEqual(try fileContent.asString(), jsonContent)
 
         let patchedJSONContent: PatchedJSON = Content(fileContent) {
+            Add(address: "/users/-", jsonContent: "alex")
+        }
+
+        XCTAssertEqual(try patchedJSONContent.reduced().asString(), expectJSONContent)
+    }
+
+    func testFileLoading_helper() throws {
+        // TODO might be better with this test in core
+        let jsonContent = """
+                          {
+                              "login_permitted": true,
+                              "login_count": 17,
+                              "users": []
+                          }
+
+                          """
+
+        let tempFileURL = try XCTUnwrap(createTemporaryFile(withContent: jsonContent))
+
+        defer {
+            deleteTemporaryFile(at: tempFileURL)
+        }
+
+        let expectJSONContent = """
+                                {"users":["alex"],"login_permitted":true,"login_count":17}
+                                """
+
+        let patchedJSONContent: PatchedJSON = Content(fileURL: tempFileURL) {
             Add(address: "/users/-", jsonContent: "alex")
         }
 
