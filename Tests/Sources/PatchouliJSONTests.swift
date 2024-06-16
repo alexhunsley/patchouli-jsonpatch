@@ -142,6 +142,33 @@ final class PatchouliJSONTests: XCTestCase {
         try XCTAssertEqual(dataResult.data(), expectedJSON) // JSONPatchType.emptyObjectContent.data())
     }
 
+    func test_stringLiteralContent() throws {
+        // works
+        //        let patchedJSONContent: PatchedJSON = Content(
+        //            .literal("""
+        //                    { "greet": "Hello", "bye": "auf wiedersehen" }
+        //                    """.utf8Data)
+        //        ) {
+        ////            Add(address: "/users/-", jsonContent: "alex")
+        //        }
+
+        let patchedJSONContent: PatchedJSON = Content(string:
+            """
+            { "greet": "Hello", "bye": "auf wiedersehen", "users": [] }
+            """
+        ) {
+            Add(address: "/users/-", jsonContent: "alex")
+        }
+
+        let dataResult = try patchedJSONContent.reduced()
+        let expectedJSONData = Data("""
+                                    {"greet":"Hello","bye":"auf wiedersehen","users":["alex"]}
+                                    """.utf8)
+        print("QIQI expected: \(expectedJSONData.string())")
+        print("QIQI got: \(try dataResult.string())")
+        try XCTAssertEqual(dataResult.data(), expectedJSONData)
+    }
+
     func test_DSL_ifTestOperationIsNotLastAndFails_thenOriginalJSONISReturned() throws {
         let patchedJSONContent = JSONObject {
             Add(address: "/myArray", jsonContent: "mike")

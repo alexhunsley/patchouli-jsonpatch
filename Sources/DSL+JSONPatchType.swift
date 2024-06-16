@@ -40,6 +40,25 @@ public func Content(fileURL: URL,
                    contentPatches: patchItems())
 }
 
+// TODO a Content like above but for jsonContent: type param as used in patches?
+// -- TODO does this make any sense? I'm not sure it does!
+public func Content(jsonContent jsonContentClosure: @autoclosure @escaping () -> Any?,
+                    @AddressedPatchItemsBuilder<JSONPatchType> patchedBy patchItems: PatchListProducer<JSONPatchType> = { AddressedPatch.emptyPatchList })
+        -> PatchedContent<JSONPatchType> {
+
+    let retValueData = applyBuilder(jsonContentClosure)
+
+    return PatchedContent(content: .literal(retValueData),
+                          contentPatches: patchItems())
+}
+
+public func Content(string: String,
+                    @AddressedPatchItemsBuilder<JSONPatchType> patchedBy patchItems: PatchListProducer<JSONPatchType> = { AddressedPatch.emptyPatchList })
+        -> PatchedContent<JSONPatchType> {
+
+            PatchedContent(content: .literal(string.utf8Data),
+                   contentPatches: patchItems())
+}
 
 public func Add(address: String,
                 jsonContent jsonContentClosure: @autoclosure @escaping () -> Any?,
