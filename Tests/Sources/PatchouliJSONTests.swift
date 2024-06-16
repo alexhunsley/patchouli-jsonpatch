@@ -23,22 +23,23 @@ final class PatchouliJSONTests: XCTestCase {
 
         // TODO same as for string test: testReducers()
         let dataResult = try patchedJSONContent.reduced()
-        XCTAssertEqual(try dataResult.asString(), "{\"a\":\"hello\"}")
+        XCTAssertEqual(try dataResult.string(), "{\"a\":\"hello\"}")
     }
 
     func test_DSL_emptyContent() throws {
         // can I put emptyContent into extension on content? probably
         let patchedJSONContent: PatchedJSON = Content(JSONPatchType.emptyContent)
         let dataResult = try patchedJSONContent.reduced()
-        XCTAssertEqual(try dataResult.asString(), "{}")
+        XCTAssertEqual(try dataResult.string(), "{}")
     }
 
     func test_DSL_patchedJSONContent1() throws {
         let patchedJSONContent: PatchedJSON = Content(JSONPatchType.emptyContent) {
+            // tODO do simpler version of this and others! but keep this verbose example too
             Add(address: "", simpleContent: .literal("\"alex\"".utf8Data))
         }
         let dataResult = try patchedJSONContent.reduced()
-        XCTAssertEqual(try dataResult.asString(), """
+        XCTAssertEqual(try dataResult.string(), """
                                                   "alex"
                                                   """)
     }
@@ -48,7 +49,9 @@ final class PatchouliJSONTests: XCTestCase {
             Add(address: "/", simpleContent: .literal("\"alex\"".utf8Data))
         }
         let dataResult = try patchedJSONContent.reduced()
-        XCTAssertEqual(try dataResult.asString(), """
+
+        // try the manual encoding passing (defaults to .utf8 normally anyway)
+        XCTAssertEqual(try dataResult.string(encoding: .utf8), """
                                                   {"":"alex"}
                                                   """)
     }
@@ -59,7 +62,7 @@ final class PatchouliJSONTests: XCTestCase {
             Add(address: "/new", simpleContent: .literal("\"mike\"".utf8Data))
         }
         let dataResult = try patchedJSONContent.reduced()
-        XCTAssertEqual(try dataResult.asString(), """
+        XCTAssertEqual(try dataResult.string(), """
                                                   {"new":"mike"}
                                                   """)
     }
@@ -71,7 +74,7 @@ final class PatchouliJSONTests: XCTestCase {
             Add(address: "/myArray/-", simpleContent: .literal("\"alex\"".utf8Data))
         }
         let dataResult = try patchedJSONContent.reduced()
-        XCTAssertEqual(try dataResult.asString(), """
+        XCTAssertEqual(try dataResult.string(), """
                                                   {"myArray":["mike","alex"]}
                                                   """)
     }
@@ -97,7 +100,7 @@ final class PatchouliJSONTests: XCTestCase {
             Add(address: "/myArray/-", jsonContent: null) // becomes 'null'
         }
         let dataResult = try patchedJSONContent.reduced()
-        XCTAssertEqual(try dataResult.asString(), """
+        XCTAssertEqual(try dataResult.string(), """
                                                   {"myArray":["mike",7,1.2,[5,61,[3]],[\"foo\",\"zoo\",0],true,false,null,null]}
                                                   """)
     }
@@ -113,7 +116,7 @@ final class PatchouliJSONTests: XCTestCase {
             Test(address: "/doesNotExist", expectedSimpleContent: JSONPatchType.emptyArrayContent)
         }
         let dataResult = try patchedJSONContent.reduced()
-        print("Redoid1 = ", try dataResult.asString())
+        print("Redoid1 = ", try dataResult.string())
 
         // we expect the empty JSONObject to be returned, as the test will fail.
         // meaning no patching should take place
@@ -127,7 +130,7 @@ final class PatchouliJSONTests: XCTestCase {
         }
         let dataResult = try patchedJSONContent.reduced()
 
-        print("Redoid2 = ", try dataResult.asString())
+        print("Redoid2 = ", try dataResult.string())
 
         let expectedJSON = Data("""
                                 {"myArray":"mike"}
@@ -146,15 +149,15 @@ final class PatchouliJSONTests: XCTestCase {
         }
         let dataResult = try patchedJSONContent.reduced()
 
-        print("Redoid2 = ", try dataResult.asString())
+        print("Redoid2 = ", try dataResult.string())
 
         let expectedJSONData = Data("""
                                     {"myArray":"mike","myArray2":"alex"}
                                     """.utf8)
 
         // TODO change of manual decoding calls to this:
-        print("Res:|", try dataResult.asString(), "|")
-        print("expectedJSON:|", expectedJSONData.asString(), "|")
+        print("Res:|", try dataResult.string(), "|")
+        print("expectedJSON:|", expectedJSONData.string(), "|")
         // we expect the empty JSONObject to be returned, as the test will fail.
         // meaning no patching should take place
 
@@ -192,7 +195,7 @@ final class PatchouliJSONTests: XCTestCase {
             Add(address: "/users/-", jsonContent: "alex")
         }
 
-        XCTAssertEqual(try patchedJSONContent.reduced().asString(), expectJSONContent)
+        XCTAssertEqual(try patchedJSONContent.reduced().string(), expectJSONContent)
     }
 
     func testBundleLoading_manual() throws {
@@ -209,7 +212,7 @@ final class PatchouliJSONTests: XCTestCase {
             Add(address: "/users/-", jsonContent: "alex")
         }
 
-        XCTAssertEqual(try patchedJSONContent.reduced().asString(), expectJSONContent)
+        XCTAssertEqual(try patchedJSONContent.reduced().string(), expectJSONContent)
 
     }
 
@@ -237,13 +240,13 @@ final class PatchouliJSONTests: XCTestCase {
         let fileContent = JSONContent.fileURL(tempFileURL)
 
         print("Temp file: \(tempFileURL)")
-        XCTAssertEqual(try fileContent.asString(), jsonContent)
+        XCTAssertEqual(try fileContent.string(), jsonContent)
 
         let patchedJSONContent: PatchedJSON = Content(fileContent) {
             Add(address: "/users/-", jsonContent: "alex")
         }
 
-        XCTAssertEqual(try patchedJSONContent.reduced().asString(), expectJSONContent)
+        XCTAssertEqual(try patchedJSONContent.reduced().string(), expectJSONContent)
     }
 
     func testFileLoading_helper() throws {
@@ -271,7 +274,7 @@ final class PatchouliJSONTests: XCTestCase {
             Add(address: "/users/-", jsonContent: "alex")
         }
 
-        XCTAssertEqual(try patchedJSONContent.reduced().asString(), expectJSONContent)
+        XCTAssertEqual(try patchedJSONContent.reduced().string(), expectJSONContent)
     }
 }
 

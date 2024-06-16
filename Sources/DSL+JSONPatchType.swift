@@ -122,7 +122,7 @@ public struct JSONSimpleContentBuilder {
         }
 
         if let array = item as? any Sequence {
-            let items = array.map { buildBlock($0).asString() }
+            let items = array.map { buildBlock($0).string() }
             let seqAsStr = "[" + items.joined(separator: ",") + "]"
             return seqAsStr.utf8Data
         }

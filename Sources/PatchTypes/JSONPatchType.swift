@@ -43,8 +43,9 @@ public enum JSONContent {
         }
     }
 
-    public func asString() throws -> String {
-        String(decoding: try data(), as: UTF8.self)
+    public func string(encoding: String.Encoding = .utf8) throws -> String {
+        let data = try self.data() // assuming self.data() is defined elsewhere and returns Data
+        return String(data: data, encoding: encoding) ?? "Decoding failed" // TODO throw error on nil?
     }
 
     /// Convenience to make a literal from various types
@@ -85,11 +86,11 @@ public struct JSONPatchType: PatchType {
     /// The Protocol Witness used by the reducer
     static public var patcher = Patchable<JSONPatchType>(
         added: { (container: ContentType, addition: ContentType, address: String) throws -> ContentType in
-            let additionStr = try addition.asString()
+            let additionStr = try addition.string()
             let madeJSONPatchData = Data("""
                                      [{"op": "add", "path": "\(address)", "value": \(additionStr)}]
                                      """.utf8)
-            print(madeJSONPatchData.asString())
+            print(madeJSONPatchData.string())
             let patch = try! JSONPatch(data: madeJSONPatchData)
 
             let x = try container.data()
@@ -106,7 +107,7 @@ public struct JSONPatchType: PatchType {
             return try! .literal(patch.apply(to: container.data()))
         },
         replaced: { (container: ContentType, replacement: ContentType, address: String) throws -> ContentType in
-            let replacementStr = try replacement.asString()
+            let replacementStr = try replacement.string()
 
             let madeJSONPatchData = Data("""
                                      [{"op": "replace", "path": "\(address)", "value": \(replacementStr)}]
@@ -130,15 +131,15 @@ public struct JSONPatchType: PatchType {
         },
         test: { (container: ContentType, value: ContentType, address: String) throws in
             let valueData = try value.data()
-            let valueStr = valueData.asString()
+            let valueStr = valueData.string()
 
             //                                     [{"op": "test", "path": "\(address)", "value": "\(valueStr)"}]
             let madeJSONPatchData = Data("""
                                      [{"op": "test", "path": "\(address)", "value": \(valueStr)}]
                                      """.utf8)
 
-            print("Container: \(try container.asString())")
-            print(madeJSONPatchData.asString())
+            print("Container: \(try container.string())")
+            print(madeJSONPatchData.string())
 
             let patch = try! JSONPatch(data: madeJSONPatchData)
             do {
