@@ -1,5 +1,5 @@
 # Patchouli JSON Patcher
-is a JSONPatch library for Swift featuring an ergonomic DSL. It uses [JSONPatch](https://github.com/raymccrae/swift-jsonpatch) lib for the patch execution.
+is a JSONPatch library for Swift featuring an ergonomic DSL. It is built on the [Patchouli Core](https://github.com/alexhunsley/patchouli-core) engine and uses [JSONPatch](https://github.com/raymccrae/swift-jsonpatch) lib for the patch execution.
 
 Example:
 
