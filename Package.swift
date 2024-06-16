@@ -21,7 +21,7 @@ let package = Package(
             name: "PatchouliJSON",
             dependencies: [
                 .product(name: "PatchouliCore", package: "patchouli-core"),
-                .package(product: "JSONPatch")
+                .product(name: "JSONPatch", package: "swift-jsonpatch")
             ]
         ),
         .testTarget(
