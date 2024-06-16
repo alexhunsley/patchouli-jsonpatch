@@ -14,8 +14,6 @@ let package = Package(
         .package(url: "https://github.com/alexhunsley/patchouli-core", .upToNextMajor(from: "0.9.1")),
         .package(url: "https://github.com/raymccrae/swift-jsonpatch.git", .upToNextMajor(from: "1.0.0"))
     ],
-
-    ],
     targets: [
         .target(
             name: "PatchouliJSON",
