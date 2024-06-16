@@ -137,23 +137,3 @@ Note that with nested patching, the deepest operations are resolved first: in th
 # Patchouli is a generic patching engine
 
 PatchouliJSON depends on [Patchouli Core](https://github.com/alexhunsley/patchouli-core), a generic patching engine. You can use Pathcouli Core to make patchers for other kinds of data.
-
-Patchouli Core contains a toy string patcher for demonstration purposes:
-
-```
-// Input: "Hello World"
-// Patched result: "Goodbye my friend"
-
-let stringPatchContent: StringPatchContent = Content("Hello World") {
-    Patch(address: "Hello", with: "Goodbye")
-    Patch(address: "World", with: "my friend")
-}
-
-let result: String = try stringPatchContent.reduce()
-```
-
-# How Patchouli Core works
-
-It has two major parts: a DSL that feels similar to SwiftUI, for constructing the patch, and a tree reducer which then performs the patching using appropriate functions.
-
-The representation of patchable data and the DSL are both generic, which means that you can write a patcher for anything you like.
