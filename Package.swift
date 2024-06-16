@@ -11,7 +11,7 @@ let package = Package(
             targets: ["PatchouliJSON"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/alexhunsley/patchouli-core", branch: "main")  //.upToNextMajor(from: "1.0.6"))
+        .package(url: "https://github.com/alexhunsley/patchouli-core", .upToNextMajor(from: "0.0.9"))
     ],
     targets: [
         .target(

@@ -1,13 +1,13 @@
 {
-  "originHash" : "64534c0433494e9833d0eaca18219cde372e45e0e2e1e2a25a144bc7706a1725",
+  "originHash" : "a3ff8c03378979cb0cb9b8c7f42b4f92b7b5fba4f3823ca8a3ee8a69e33ca83b",
   "pins" : [
     {
       "identity" : "patchouli-core",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/alexhunsley/patchouli-core",
       "state" : {
-        "branch" : "main",
-        "revision" : "c0608e82a0ccab8b469deddd6928c63d351b467a"
+        "revision" : "0c9f966ebaf64ca6fdb7f9ab91c34baf4917caad",
+        "version" : "0.9.0"
       }
     },
     {
