@@ -210,6 +210,24 @@ final class PatchouliJSONTests: XCTestCase {
         try XCTAssertEqual(dataResult.data(), expectedJSONData)
     }
 
+    // MARK: - Nested patching
+
+    func test_DSL_nestedPatches() throws {
+        
+        let bundleContent = JSONContent.bundleResource(Bundle(for: Self.self), "UserList")
+        
+        let someJSONFileURL = URL(fileURLWithPath: "/a/b/c")
+        let someJSONFileURL2 = URL(fileURLWithPath: "/a/b/d")
+        
+        let patchedJSONContent: PatchedJSON = Content(fileURL: someJSONFileURL) {
+            Add(address: "/some_key", content: Content(fileURL: someJSONFileURL2) {
+                Replace(address: "hello", jsonContent: "friend")
+            })
+            
+            Replace(address: "goodbye", jsonContent: "auf wiedersehen")
+        }
+    }
+
     // MARK: - Bundle and file URL loading tests
 
     // need to depend on framework holder to use this, or have own bundle
