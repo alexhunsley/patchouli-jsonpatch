@@ -47,28 +47,6 @@ public enum JSONContent {
         let data = try self.data() // assuming self.data() is defined elsewhere and returns Data
         return String(data: data, encoding: encoding) ?? "Decoding failed" // TODO throw error on nil?
     }
-
-    /// Convenience to make a literal from various types
-    public static func make(_ value: @autoclosure @escaping () -> Any?) -> JSONContent {
-        .literal(applyBuilder(value))
-    }
-
-    // helper to get the data from this content.
-    // AH it's just the above, dope!
-//    func deriveData(dataResult: JSONContent) -> Data {
-//        switch dataResult {
-//        case let .literal(data):
-//            return data
-//        case .fileURL(_):
-//            // TODO
-//            assertionFailure("Impl me2")
-//            return Data()
-//        case .bundleResource(_, _):
-//            // TODO
-//            assertionFailure("Impl me3")
-//            return Data()
-//        }
-//    }
 }
 
 public struct JSONPatchType: PatchType {
