@@ -66,7 +66,6 @@ You can also use an empty JSON object or array as your starting point:
             Add(address: "/asdf", jsonContent: "Hello")
         }
 
-
         let patchedEmptyArray1 = EmptyJSONArray {
             Add(address: "/-", jsonContent: "xyz")
             Add(address: "/-", jsonContent: "abc")
