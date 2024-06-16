@@ -60,6 +60,18 @@ public func Content(string: String,
                    contentPatches: patchItems())
 }
 
+public func EmptyJSONObject(@AddressedPatchItemsBuilder<JSONPatchType> patchedBy patchItems: PatchListProducer<JSONPatchType> = { AddressedPatch.emptyPatchList })
+        -> PatchedContent<JSONPatchType> {
+
+    PatchedContent(content: JSONPatchType.emptyObjectContent, contentPatches: patchItems())
+}
+
+public func EmptyJSONArray(@AddressedPatchItemsBuilder<JSONPatchType> patchedBy patchItems: PatchListProducer<JSONPatchType> = { AddressedPatch.emptyPatchList })
+        -> PatchedContent<JSONPatchType> {
+
+    PatchedContent(content: JSONPatchType.emptyArrayContent, contentPatches: patchItems())
+}
+
 public func Add(address: String,
                 jsonContent jsonContentClosure: @autoclosure @escaping () -> Any?,
                 @AddressedPatchItemsBuilder<JSONPatchType> patchedBy patchItems: PatchListProducer<JSONPatchType> = { AddressedPatch.emptyPatchList })

@@ -18,6 +18,10 @@ public typealias PatchedJSON = PatchedContent<JSONPatchType>
 // beware, JSONPatch has a JSONPatch, obviously! Is this clear enough?
 public typealias JSONPatchItem = AddressedPatch<JSONPatchType>
 
+public typealias JSONPatchList = [JSONPatchItem]
+
+public typealias JSONPatchListBuilder = AddressedPatchItemsBuilder<JSONPatchType>
+
 extension String {
     public var utf8Data: Data { Data(self.utf8) }
 }
