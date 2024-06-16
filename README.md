@@ -12,8 +12,10 @@ Example:
     let patchedJSONContent: PatchedJSON = Content(fileURL: someJSONFileURL) {
 
         Add(address: "/users/-", jsonContent: "alex")
+
         Add(address: "/users/-", jsonContent: [1, "hi", 5.0])
-        // note: please use `null` and never `nil` to mean JSON's `null`
+
+        // note: please use `null` (and never `nil`) to represent JSON's `null`
         Add(address: "/users/-", jsonContent: null)
 
         Remove(address: "/temp/log")
