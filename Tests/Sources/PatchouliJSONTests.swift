@@ -3,6 +3,7 @@ import XCTest
 @testable import PatchouliCore
 @testable import PatchouliJSON
 
+// TODO some nested tests! there are some in String toy patcher tests already
 final class PatchouliJSONTests: XCTestCase {
 
     // MARK: - JSON Patch spec instantiation (DSL)

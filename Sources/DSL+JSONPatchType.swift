@@ -76,6 +76,7 @@ public func Test(address: String,
 }
 
 // TODO Can we use the expression builder to remove need for alt versions of methods?
+//  -- could do, but not a fan of idea, makes compile time checks looser.
 
 @resultBuilder
 public struct JSONSimpleContentBuilder {
