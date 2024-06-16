@@ -3,7 +3,7 @@ is a JSON Patch library for Swift featuring an ergonomic DSL. It is built with t
 
 Example:
 
-```
+```swift
     import PatchouliJSON
 
     // Use the DSL to construct a patch on a file's JSON content.
@@ -40,7 +40,7 @@ Example:
 
 You can also fetch JSON content from bundles:
 
-```
+```swift
     // loads User.json from the main bundle
     let patchedJSONContent: PatchedJSON = Content(resource: "User", bundle: Bundle.main) {
         Add(address: "/users/-", jsonContent: "alex")
@@ -49,7 +49,7 @@ You can also fetch JSON content from bundles:
 
 And you can use string literals for your source json (utf8 is assumed):
 
-```
+```swift
     let patchedJSONContent: PatchedJSON = Content(string:
         """
         { "greet": "Hello", "bye": "auf wiedersehen", "users": [] }
@@ -61,7 +61,7 @@ And you can use string literals for your source json (utf8 is assumed):
 
 You can also use an empty JSON object or array as your starting point:
 
-```
+```swift
         let patchedEmptyObject = EmptyJSONObject {
             Add(address: "/asdf", jsonContent: "Hello")
         }
@@ -74,7 +74,7 @@ You can also use an empty JSON object or array as your starting point:
 
 You can use `@JSONPatchListBuilder` in the same way as SwiftUI's `@ViewBuilder` to break up your patch declarations:
 
-```
+```swift
     @JSONPatchListBuilder
     func builderFunc(name: String) -> JSONPatchList {
         Add(address: "/asdf", jsonContent: "Hello \(name)")
@@ -101,7 +101,7 @@ This is particularly useful if you want to declare a patch list just once for us
 
 The DSL can handle `if`, `if-else`, `for`, `for-in`, and optionals. For example:
 
-```
+```swift
     let patchedJSONContent: PatchedJSON = Content(fileURL: someJSONFileURL) {
         for index in 0...5 {
             if someCheck(index) {
@@ -126,7 +126,7 @@ The DSL can handle `if`, `if-else`, `for`, `for-in`, and optionals. For example:
 
 The DSL can handle nesting, which means you can have patches-within-patches:
 
-```
+```swift
     let patchedJSONContent: PatchedJSON = Content(fileURL: jsonFile1URL) {
 
         Add(address: "/some_key", content: Content(fileURL: jsonFile2URL) {
