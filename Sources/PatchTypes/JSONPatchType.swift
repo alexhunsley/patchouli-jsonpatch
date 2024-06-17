@@ -55,16 +55,8 @@ public enum JSONContent {
 
 public struct JSONPatchType: PatchType {
     public typealias ContentType = JSONContent
-//    public typealias ContentType = Data
     public typealias AddressType = String
 
-//    public typealias AddedHandler = @Sendable (C, C, A) -> C
-//    public typealias RemovedHandler = @Sendable (C, A) -> C
-//    public typealias ReplacedHandler = @Sendable (C, C, A) -> C
-//    public typealias CopiedHandler = @Sendable (C, A, A) -> C
-//    public typealias MovedHandler = @Sendable (C, A, A) -> C
-//    public typealias TestHandler = @Sendable (C, A) -> Bool
-//
     /// The Protocol Witness used by the reducer
     static public var patcher = Patchable<JSONPatchType>(
         added: { (container: ContentType, addition: ContentType, address: String) throws -> ContentType in
@@ -115,7 +107,6 @@ public struct JSONPatchType: PatchType {
             let valueData = try value.data()
             let valueStr = valueData.string()
 
-            //                                     [{"op": "test", "path": "\(address)", "value": "\(valueStr)"}]
             let madeJSONPatchData = Data("""
                                      [{"op": "test", "path": "\(address)", "value": \(valueStr)}]
                                      """.utf8)
@@ -126,28 +117,13 @@ public struct JSONPatchType: PatchType {
             let patch = try! JSONPatch(data: madeJSONPatchData)
             do {
                 return try .literal(patch.apply(to: container.data()))
-//                return true
             }
             catch let error {
-                print("\(error)")
-                // must throw, not ret changed content!
-//                return container
                 throw PatchouliError<JSONPatchType>.testFailed(container, address, value)
-//                // NB if test fails, then the patch as a whole should not apply!
-//                // this shouldn't actually throw an error! It's just for not applying the patch.
-//                //
-//                // Hmm. My whole approach is doing each step as its own json_patch, but I should be gathering into
-//                // one piece?
-//                // So reduce should build up a collection of commands, NOT the actual result!
-////                return false
             }
         }
-    )// [{"op": "test", "path": "/myArray", "value": []}]
+    )
 
-    // TODO use our helper, rather than utf8 directly, then can kill the above utf8Data helper?
-    // -- hmm, issues.
-//    static public var emptyObjectContent = JSONContent.make("{}")
-//    static public var emptyArrayContent = JSONContent.make("[]")
     static public var emptyObjectContent: JSONContent = .literal("{}".utf8Data)
     static public var emptyArrayContent: JSONContent = .literal("[]".utf8Data)
 
