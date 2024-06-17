@@ -142,3 +142,9 @@ Note that with nested patching, the deepest operations are resolved first: in th
 # Patchouli is a generic patching engine
 
 PatchouliJSON depends on [Patchouli Core](https://github.com/alexhunsley/patchouli-core), a generic patching engine. You can use Pathcouli Core to make patchers for other kinds of data.
+
+# Project Keywords
+
+```
+protocol witness, generics, spm, tuist, git submodule, json, jsonpatch
+```
