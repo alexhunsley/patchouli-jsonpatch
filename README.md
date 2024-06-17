@@ -139,7 +139,7 @@ The DSL can handle nesting, which means you can have patches-within-patches:
 
 Note that with nested patching, the deepest operations are resolved first: in the above, the `Replace` patch is applied to the contents of JSON file 1. The result of that is then added at `/some_key` in the content from JSON file 2. And finally the `Remove` is peformed on that.
 
-# Patchouli is a generic patching engine
+# Built on top of Patchouli, a generic patching engine
 
 PatchouliJSON depends on [Patchouli Core](https://github.com/alexhunsley/patchouli-core), a generic patching engine. You can use Pathcouli Core to make patchers for other kinds of data.
 
