@@ -143,7 +143,7 @@ The DSL can handle nesting, which means you can have patches-within-patches:
     }
 ```
 
-Note that with nested patching, the deepest operations are resolved first: in the above, the `Replace` patch is applied to the contents of JSON file 1. The result of that is then added at `/some_key` in the content from JSON file 2. And finally the `Remove` is peformed on that.
+Note that with nested patching, the deepest operations are resolved first: in the above, the `Replace` patch is applied to the contents of JSON file 2. The result of that is then added at `/some_key` in the content from JSON file 1. And finally the `Remove` is peformed on what we have.
 
 # Built on top of Patchouli, a generic patching engine
 
