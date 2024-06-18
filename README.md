@@ -99,7 +99,9 @@ This is particularly useful if you want to declare a patch list just once for us
 
 ## Installation
 
-To install via SPM, open the SPM package manager and add `https://github.com/alexhunsley/patchouli-jsonpatch`. Other package managers might be supported later.
+To install via SPM, open the SPM package manager and add `https://github.com/alexhunsley/patchouli-jsonpatch`.
+
+Other package managers might be supported later.
 
 ## DSL features
 
