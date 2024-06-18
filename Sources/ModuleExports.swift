@@ -6,3 +6,5 @@
 //
 
 @_exported import PatchouliCore
+@_exported import JSONPatch
+
