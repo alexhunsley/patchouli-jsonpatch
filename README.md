@@ -97,6 +97,10 @@ You can use `@JSONPatchListBuilder` in the same way as SwiftUI's `@ViewBuilder` 
 
 This is particularly useful if you want to declare a patch list just once for use on multiple different bits of JSON.
 
+## Installation
+
+To install via SPM, open the SPM package manager and add `https://github.com/alexhunsley/patchouli-jsonpatch`. Other package managers might be supported later.
+
 ## DSL features
 
 The DSL can handle `if`, `if-else`, `for`, `for-in`, and optionals. For example:
