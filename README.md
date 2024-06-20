@@ -152,5 +152,5 @@ Patchouli JSON is built on top of [Patchouli Core](https://github.com/alexhunsle
 # Project Keywords
 
 ```
-resultbuilder, protocol witness, generics, spm, json, jsonpatch
+resultbuilder, protocol witness, generics, json, jsonpatch
 ```
