@@ -24,6 +24,8 @@ public typealias JSONPatchListBuilder = AddressedPatchItemsBuilder<JSONPatchType
 
 public struct JSONPatchType: PatchType {
     public typealias ContentType = JSONContent
+    // just make one-step for now
+    public typealias EncodedContentType = JSONContent
     public typealias AddressType = String
 
     /// The Protocol Witness used by the reducer
