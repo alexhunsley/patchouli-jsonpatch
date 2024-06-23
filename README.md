@@ -6,6 +6,10 @@
 
 This is a JSON Patch library for Swift featuring an ergonomic DSL. It is built with the [Patchouli Core](https://github.com/alexhunsley/patchouli-core) engine and uses [JSONPatch](https://github.com/raymccrae/swift-jsonpatch) lib for the patch execution.
 
+## Installation
+
+To install via SPM, add a dependency for `https://github.com/alexhunsley/patchouli-jsonpatch`.
+
 ## Usage
 
 ```swift
@@ -101,12 +105,6 @@ You can use `@JSONPatchListBuilder` in the same way as SwiftUI's `@ViewBuilder` 
 ```
 
 This is particularly useful if you want to declare a patch list just once for use on multiple different bits of JSON.
-
-## Installation
-
-To install via SPM, open the SPM package manager and add `https://github.com/alexhunsley/patchouli-jsonpatch`.
-
-Other package managers might be supported later.
 
 ## DSL features
 
