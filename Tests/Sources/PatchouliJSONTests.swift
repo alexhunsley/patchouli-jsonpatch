@@ -143,15 +143,6 @@ final class PatchouliJSONTests: XCTestCase {
     }
 
     func test_stringLiteralContent() throws {
-        // works
-        //        let patchedJSONContent: PatchedJSON = Content(
-        //            .literal("""
-        //                    { "greet": "Hello", "bye": "auf wiedersehen" }
-        //                    """.utf8Data)
-        //        ) {
-        ////            Add(address: "/users/-", jsonContent: "alex")
-        //        }
-
         let patchedJSONContent: PatchedJSON = Content(string:
             """
             { "greet": "Hello", "bye": "auf wiedersehen", "users": [] }
@@ -206,27 +197,27 @@ final class PatchouliJSONTests: XCTestCase {
 
         // we expect the empty JSONObject to be returned, as the test will fail
         // and hence patching won't happen.
-
         try XCTAssertEqual(dataResult.data(), expectedJSONData)
     }
 
     // MARK: - Nested patching
 
-    func test_DSL_nestedPatches() throws {
-        
-        let bundleContent = JSONContent.bundleResource(Bundle(for: Self.self), "UserList")
-        
-        let someJSONFileURL = URL(fileURLWithPath: "/a/b/c")
-        let someJSONFileURL2 = URL(fileURLWithPath: "/a/b/d")
-        
-        let patchedJSONContent: PatchedJSON = Content(fileURL: someJSONFileURL) {
-            Add(address: "/some_key", content: Content(fileURL: someJSONFileURL2) {
-                Replace(address: "hello", jsonContent: "friend")
-            })
-            
-            Replace(address: "goodbye", jsonContent: "auf wiedersehen")
-        }
-    }
+// TODO finish me
+//    func test_DSL_nestedPatches() throws {
+//        
+//        let bundleContent = JSONContent.bundleResource(Bundle(for: Self.self), "UserList")
+//        
+//        let someJSONFileURL = URL(fileURLWithPath: "/a/b/c")
+//        let someJSONFileURL2 = URL(fileURLWithPath: "/a/b/d")
+//        
+//        let patchedJSONContent: PatchedJSON = Content(fileURL: someJSONFileURL) {
+//            Add(address: "/some_key", content: Content(fileURL: someJSONFileURL2) {
+//                Replace(address: "hello", jsonContent: "friend")
+//            })
+//            
+//            Replace(address: "goodbye", jsonContent: "auf wiedersehen")
+//        }
+//    }
 
     // MARK: - Bundle and file URL loading tests
 
@@ -327,17 +318,13 @@ final class PatchouliJSONTests: XCTestCase {
 // MARK: - Helpers
 
 extension XCTestCase {
-    // Function to create a temporary file with some content
     func createTemporaryFile(withContent content: String) -> URL? {
-        // Get the path to the temporary directory
         let tempDirectory = NSTemporaryDirectory()
 
-        // Create a unique file name using UUID
         let fileName = UUID().uuidString
         let filePath = tempDirectory.appending("/\(fileName)")
         let fileURL = URL(fileURLWithPath: filePath)
 
-        // Write content to the file
         do {
             try content.write(to: fileURL, atomically: true, encoding: .utf8)
             return fileURL

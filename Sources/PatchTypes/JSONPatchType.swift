@@ -22,37 +22,6 @@ public typealias JSONPatchList = [JSONPatchItem]
 
 public typealias JSONPatchListBuilder = AddressedPatchItemsBuilder<JSONPatchType>
 
-extension String {
-    public var utf8Data: Data { Data(self.utf8) }
-}
-
-public enum JSONContent {
-    case literal(Data)
-    case fileURL(URL)
-    case bundleResource(Bundle, String)
-
-    public func data() throws -> Data {
-        switch self {
-        case let .literal(data):
-            return data
-        case let .bundleResource(bundle, bundleResourceName):
-            // maybe do caching later? if feeling excessive. prolly OTT though
-            guard let fileURL = bundle.url(forResource: bundleResourceName, withExtension: "json") else {
-                assertionFailure("Didn't find the json resource")
-                return Data()
-            }
-            return try Data(contentsOf: fileURL)
-        case let .fileURL(fileURL):
-            return try Data(contentsOf: fileURL)
-        }
-    }
-
-    public func string(encoding: String.Encoding = .utf8) throws -> String {
-        let data = try self.data() // assuming self.data() is defined elsewhere and returns Data
-        return String(data: data, encoding: encoding) ?? "Decoding failed" // TODO throw error on nil?
-    }
-}
-
 public struct JSONPatchType: PatchType {
     public typealias ContentType = JSONContent
     public typealias AddressType = String
@@ -64,13 +33,8 @@ public struct JSONPatchType: PatchType {
             let madeJSONPatchData = Data("""
                                      [{"op": "add", "path": "\(address)", "value": \(additionStr)}]
                                      """.utf8)
-            print(madeJSONPatchData.string())
+
             let patch = try! JSONPatch(data: madeJSONPatchData)
-
-            let x = try container.data()
-            print("Data = \(x)")
-
-            // so we need to change `to: container` here to use the ContentIdea and get the data from whatever src
             return try! .literal(patch.apply(to: container.data()))
         },
         removed: { (container: ContentType, address: String) -> ContentType in
@@ -111,9 +75,6 @@ public struct JSONPatchType: PatchType {
                                      [{"op": "test", "path": "\(address)", "value": \(valueStr)}]
                                      """.utf8)
 
-            print("Container: \(try container.string())")
-            print(madeJSONPatchData.string())
-
             let patch = try! JSONPatch(data: madeJSONPatchData)
             do {
                 return try .literal(patch.apply(to: container.data()))
@@ -128,4 +89,31 @@ public struct JSONPatchType: PatchType {
     static public var emptyArrayContent: JSONContent = .literal("[]".utf8Data)
 
     public static var emptyContent: JSONContent = emptyObjectContent
+}
+
+public enum JSONContent {
+    case literal(Data)
+    case fileURL(URL)
+    case bundleResource(Bundle, String)
+
+    public func data() throws -> Data {
+        switch self {
+        case let .literal(data):
+            return data
+        case let .bundleResource(bundle, bundleResourceName):
+            // maybe do caching later? if feeling excessive. prolly OTT though
+            guard let fileURL = bundle.url(forResource: bundleResourceName, withExtension: "json") else {
+                assertionFailure("Didn't find the json resource")
+                return Data()
+            }
+            return try Data(contentsOf: fileURL)
+        case let .fileURL(fileURL):
+            return try Data(contentsOf: fileURL)
+        }
+    }
+
+    public func string(encoding: String.Encoding = .utf8) throws -> String {
+        let data = try self.data()
+        return String(data: data, encoding: encoding) ?? "Decoding failed" // TODO throw error on nil?
+    }
 }
