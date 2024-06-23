@@ -202,22 +202,22 @@ final class PatchouliJSONTests: XCTestCase {
 
     // MARK: - Nested patching
 
-// TODO finish me
-//    func test_DSL_nestedPatches() throws {
-//        
-//        let bundleContent = JSONContent.bundleResource(Bundle(for: Self.self), "UserList")
-//        
-//        let someJSONFileURL = URL(fileURLWithPath: "/a/b/c")
-//        let someJSONFileURL2 = URL(fileURLWithPath: "/a/b/d")
-//        
-//        let patchedJSONContent: PatchedJSON = Content(fileURL: someJSONFileURL) {
-//            Add(address: "/some_key", content: Content(fileURL: someJSONFileURL2) {
-//                Replace(address: "hello", jsonContent: "friend")
-//            })
-//            
-//            Replace(address: "goodbye", jsonContent: "auf wiedersehen")
-//        }
-//    }
+    // TODO finish me
+    //    func test_DSL_nestedPatches() throws {
+    //
+    //        let bundleContent = JSONContent.bundleResource(Bundle(for: Self.self), "UserList")
+    //
+    //        let someJSONFileURL = URL(fileURLWithPath: "/a/b/c")
+    //        let someJSONFileURL2 = URL(fileURLWithPath: "/a/b/d")
+    //
+    //        let patchedJSONContent: PatchedJSON = Content(fileURL: someJSONFileURL) {
+    //            Add(address: "/some_key", content: Content(fileURL: someJSONFileURL2) {
+    //                Replace(address: "hello", jsonContent: "friend")
+    //            })
+    //
+    //            Replace(address: "goodbye", jsonContent: "auf wiedersehen")
+    //        }
+    //    }
 
     // MARK: - Bundle and file URL loading tests
 
@@ -312,6 +312,23 @@ final class PatchouliJSONTests: XCTestCase {
         }
 
         XCTAssertEqual(try patchedJSONContent.reduced().string(), expectJSONContent)
+    }
+
+    //-------------------------------------------------------------------------------------------
+
+    func test_twoStageReducer() throws {
+         typealias PatchedTwoStageJSON = PatchedContent<JSONPatchTwoStageType>
+
+//        let patchedJSONContent: PatchedJSON = Content(JSONPatchType.emptyContent) {
+        let patchedJSONContent: PatchedTwoStageJSON = Content(JSONPatchTwoStageType.emptyContent) {
+            Add(address: "/myArray", simpleContent: .literal("[]".utf8Data))
+            Add(address: "/myArray/-", simpleContent: .literal("\"mike\"".utf8Data))
+            Add(address: "/myArray/-", simpleContent: .literal("\"alex\"".utf8Data))
+        }
+        let dataResult = try patchedJSONContent.reduced()
+        XCTAssertEqual(try dataResult.string(), """
+                                                {"myArray":["mike","alex"]}
+                                                """)
     }
 }
 

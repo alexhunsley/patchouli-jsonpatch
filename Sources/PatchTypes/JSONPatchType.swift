@@ -103,6 +103,105 @@ public struct JSONPatchType: PatchType {
     public static var emptyContent: JSONContent = emptyObjectContent
 }
 
+
+//public struct JSONTwoStagePatchType: PatchType {
+//    public typealias ContentType = JSONContent
+//    // just make one-step for now
+//    public typealias EncodedContentType = Data
+//    public typealias AddressType = String
+//
+//    /// The Protocol Witness used by the reducer
+//    public static var patcher = PatchouliCore.Patchable<JSONTwoStagePatchType>(
+////        added: JSONPatchType.patcher.added
+//        added: { (container: ContentType?, addition: ContentType, address: String) throws -> EncodedContentType in
+//            guard let container else { throw("No container in JSONPatchType! 1") }
+//            let additionStr = try addition.string()
+//            let madeJSONPatchData = Data("""
+//                                     [{"op": "add", "path": "\(address)", "value": \(additionStr)}]
+//                                     """.utf8)
+//            return madeJSONPatchData
+//        }
+////        removed: JSONPatchType.patcher.removed,
+////        replaced: JSONPatchType.patcher.replaced,
+////        copied: JSONPatchType.patcher.copied,
+////        moved: JSONPatchType.patcher.moved,
+////        test: JSONPatchType.patcher.test
+//    )
+//
+////    Patchable<JSONPatchType>(
+////        added: { (container: ContentType?, addition: ContentType, address: String) throws -> EncodedContentType in
+////            guard let container else { throw("No container in JSONPatchType! 1") }
+////            let additionStr = try addition.string()
+////            let madeJSONPatchData = Data("""
+////                                     [{"op": "add", "path": "\(address)", "value": \(additionStr)}]
+////                                     """.utf8)
+////
+////            let patch = try! JSONPatch(data: madeJSONPatchData)
+////            return try! .literal(patch.apply(to: container.data()))
+////        },
+////        removed: { (container: ContentType?, address: String) -> EncodedContentType in
+////            guard let container else { throw("No container in JSONPatchType! 2") }
+////            let madeJSONPatchData = Data("""
+////                                     [{"op": "remove", "path": "\(address)"}]
+////                                     """.utf8)
+////            let patch = try! JSONPatch(data: madeJSONPatchData)
+////            return try! .literal(patch.apply(to: container.data()))
+////        },
+////        replaced: { (container: ContentType?, replacement: ContentType, address: String) throws -> EncodedContentType in
+////            guard let container else { throw("No container in JSONPatchType! 3") }
+////
+////            let replacementStr = try replacement.string()
+////
+////            let madeJSONPatchData = Data("""
+////                                     [{"op": "replace", "path": "\(address)", "value": \(replacementStr)}]
+////                                     """.utf8)
+////            let patch = try! JSONPatch(data: madeJSONPatchData)
+////            return try! .literal(patch.apply(to: container.data()))
+////        },
+////        copied: { (container: ContentType?, fromAddress: String, toAddress: String) throws in
+////            guard let container else { throw("No container in JSONPatchType! 4") }
+////
+////            let madeJSONPatchData = Data("""
+////                                     [{"op": "copy", "from": "\(fromAddress)", "path": "\(toAddress)"}]
+////                                     """.utf8)
+////            let patch = try! JSONPatch(data: madeJSONPatchData)
+////            return try! .literal(patch.apply(to: container.data()))
+////        },
+////        moved: { (container: ContentType?, fromAddress: String, toAddress: String) throws in
+////            guard let container else { throw("No container in JSONPatchType! 5") }
+////
+////            let madeJSONPatchData = Data("""
+////                                     [{"op": "move", "from": "\(fromAddress)", "path": "\(toAddress)"}]
+////                                     """.utf8)
+////            let patch = try! JSONPatch(data: madeJSONPatchData)
+////            return try! .literal(patch.apply(to: container.data()))
+////        },
+////        test: { (container: ContentType?, value: ContentType, address: String) throws in
+////            guard let container else { throw("No container in JSONPatchType! 6") }
+////
+////            let valueData = try value.data()
+////            let valueStr = valueData.string()
+////
+////            let madeJSONPatchData = Data("""
+////                                     [{"op": "test", "path": "\(address)", "value": \(valueStr)}]
+////                                     """.utf8)
+////
+////            let patch = try! JSONPatch(data: madeJSONPatchData)
+////            do {
+////                return try .literal(patch.apply(to: container.data()))
+////            }
+////            catch let error {
+////                throw PatchouliError<JSONPatchType>.testFailed(container, address, value)
+////            }
+////        }
+////    )
+//
+//    static public var emptyObjectContent: JSONContent = .literal("{}".utf8Data)
+//    static public var emptyArrayContent: JSONContent = .literal("[]".utf8Data)
+//
+//    public static var emptyContent: JSONContent = emptyObjectContent
+//}
+
 public enum JSONContent {
     case literal(Data)
     case fileURL(URL)
@@ -132,59 +231,85 @@ public enum JSONContent {
 
 //-------------------------------------------------
 
-//public struct JSONPatchTwoStageType: PatchType {
-//    public typealias ContentType = JSONContent
-//    // just make one-step for now
-//    public typealias EncodedContentType = Data
-//    public typealias AddressType = String
-//
-//    /// The Protocol Witness used by the reducer
-//    static public var patcher = Patchable<JSONPatchTwoStageType>(
-//        added: { (container: ContentType, addition: ContentType, address: String) throws -> EncodedContentType in
-//            let additionStr = try addition.string()
-//            let madeJSONPatchData = Data("""
-//                                     [{"op": "add", "path": "\(address)", "value": \(additionStr)}]
-//                                     """.utf8)
-//            return madeJSONPatchData
-//        },
-//        removed: { (container: ContentType, address: String) -> EncodedContentType in
-//            let madeJSONPatchData = Data("""
-//                                     [{"op": "remove", "path": "\(address)"}]
-//                                     """.utf8)
-//            return madeJSONPatchData
-//        },
-//        replaced: { (container: ContentType, replacement: ContentType, address: String) throws -> EncodedContentType in
-//            let replacementStr = try replacement.string()
-//
-//            let madeJSONPatchData = Data("""
-//                                     [{"op": "replace", "path": "\(address)", "value": \(replacementStr)}]
-//                                     """.utf8)
-//            return madeJSONPatchData
-//        },
-//        copied: { (container: ContentType, fromAddress: String, toAddress: String) throws in
-//            let madeJSONPatchData = Data("""
-//                                     [{"op": "copy", "from": "\(fromAddress)", "path": "\(toAddress)"}]
-//                                     """.utf8)
-//            return madeJSONPatchData
-//        },
-//        moved: { (container: ContentType, fromAddress: String, toAddress: String) throws in
-//            let madeJSONPatchData = Data("""
-//                                     [{"op": "move", "from": "\(fromAddress)", "path": "\(toAddress)"}]
-//                                     """.utf8)
-//            return madeJSONPatchData
-//        },
-//        test: { (container: ContentType, value: ContentType, address: String) throws in
-//            let valueData = try value.data()
-//            let valueStr = valueData.string()
-//            let madeJSONPatchData = Data("""
-//                                     [{"op": "test", "path": "\(address)", "value": \(valueStr)}]
-//                                     """.utf8)
-//            return madeJSONPatchData
-//        }
-//    )
-//
-//    static public var emptyObjectContent: JSONContent = .literal("{}".utf8Data)
-//    static public var emptyArrayContent: JSONContent = .literal("[]".utf8Data)
-//
-//    public static var emptyContent: JSONContent = emptyObjectContent
-//}
+public struct JSONPatchTwoStageType: PatchType {
+    public typealias ContentType = JSONContent
+    // just make one-step for now
+    public typealias EncodedContentType = Data
+    public typealias AddressType = String
+
+    /// The Protocol Witness used by the reducer
+    static public var patcher = Patchable<JSONPatchTwoStageType>(
+        added: { (container: ContentType?, addition: ContentType, address: String) throws -> EncodedContentType in
+            let additionStr = try addition.string()
+            // NB have removed the '[ ]' from around these Datas! Not needed here for two-stage (we call JSONPatch one-shot)
+            let madeJSONPatchData = Data("""
+                                     {"op": "add", "path": "\(address)", "value": \(additionStr)}
+                                     """.utf8)
+            return madeJSONPatchData
+        },
+        removed: { (container: ContentType?, address: String) -> EncodedContentType in
+            let madeJSONPatchData = Data("""
+                                     {"op": "remove", "path": "\(address)"}
+                                     """.utf8)
+            return madeJSONPatchData
+        },
+        replaced: { (container: ContentType?, replacement: ContentType, address: String) throws -> EncodedContentType in
+            let replacementStr = try replacement.string()
+
+            let madeJSONPatchData = Data("""
+                                     {"op": "replace", "path": "\(address)", "value": \(replacementStr)}
+                                     """.utf8)
+            return madeJSONPatchData
+        },
+        copied: { (container: ContentType?, fromAddress: String, toAddress: String) throws in
+            let madeJSONPatchData = Data("""
+                                     {"op": "copy", "from": "\(fromAddress)", "path": "\(toAddress)"}
+                                     """.utf8)
+            return madeJSONPatchData
+        },
+        moved: { (container: ContentType?, fromAddress: String, toAddress: String) throws in
+            let madeJSONPatchData = Data("""
+                                     {"op": "move", "from": "\(fromAddress)", "path": "\(toAddress)"}
+                                     """.utf8)
+            return madeJSONPatchData
+        },
+        test: { (container: ContentType?, value: ContentType, address: String) throws in
+            let valueData = try value.data()
+            let valueStr = valueData.string()
+            let madeJSONPatchData = Data("""
+                                     {"op": "test", "path": "\(address)", "value": \(valueStr)}
+                                     """.utf8)
+            return madeJSONPatchData
+        },
+        listCombiner: { (content: ContentType, encodedContentTypeList: [EncodedContentType]) throws -> ContentType in
+            // don't pointlessly invoke JSONPatch if the list is empty
+            if encodedContentTypeList.isEmpty {
+                return content
+            }
+
+            let combinedData = try combineDataArray(encodedContentTypeList)
+            print("Patch json: \(combinedData.string())")
+            let patch = try! JSONPatch(data: combinedData)
+            return try! .literal(patch.apply(to: content.data()))
+        }
+    )
+
+    static public var emptyObjectContent: JSONContent = .literal("{}".utf8Data)
+    static public var emptyArrayContent: JSONContent = .literal("[]".utf8Data)
+
+    public static var emptyContent: JSONContent = emptyObjectContent
+}
+
+func combineDataArray(_ dataArray: [Data]) throws -> Data {
+    // Convert each Data to a String
+    let stringArray = dataArray.compactMap { String(data: $0, encoding: .utf8) }
+
+    // Join the strings with ","
+    let combinedString = "[" + stringArray.joined(separator: ",") + "]"
+
+    // Convert the combined string back to Data
+    guard let combinedStringData = combinedString.data(using: .utf8) else {
+        throw "Couldn't make string in combineDataArray()"
+    }
+    return combinedStringData
+}
