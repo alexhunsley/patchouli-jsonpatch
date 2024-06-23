@@ -151,7 +151,7 @@ Note that with nested patching, the deepest operations are resolved first: in th
 
 # Built on top of Patchouli, a generic patching engine
 
-Patchouli JSON is built on top of [Patchouli Core](https://github.com/alexhunsley/patchouli-core), a generic patching engine. You can use Pathcouli Core to make patchers for other kinds of data that use the same DSL described here.
+Patchouli JSON is built on top of [Patchouli Core](https://github.com/alexhunsley/patchouli-core), a generic patching engine. You can use Pathcouli Core to make patchers for other kinds of data.
 
 # Project Keywords
 
