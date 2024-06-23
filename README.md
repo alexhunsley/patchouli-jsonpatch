@@ -1,7 +1,7 @@
 # Patchouli JSON Patcher
 is a JSON Patch library for Swift featuring an ergonomic DSL. It is built with the [Patchouli Core](https://github.com/alexhunsley/patchouli-core) engine and uses [JSONPatch](https://github.com/raymccrae/swift-jsonpatch) lib for the patch execution.
 
-Example:
+## Usage
 
 ```swift
     import PatchouliJSON
