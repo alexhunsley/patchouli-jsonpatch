@@ -8,7 +8,8 @@ let project = Project(
     targets: [
         .target(
             name: "PatchouliJSON",
-            destinations: .macOS,
+//            destinations: .macOS,
+            destinations: [.mac, .appleTv, .appleWatch, .appleVision, .iPad, .iPhone],
             product: .staticLibrary,
             bundleId: "io.tuist.PatchouliJSON",
             sources: ["Sources/**"],
@@ -30,3 +31,30 @@ let project = Project(
         ),
     ]
 )
+
+///// iPhone support
+//case iPhone
+//
+///// iPad support
+//case iPad
+//
+///// Native macOS support
+//case mac
+//
+///// macOS support using iPad design
+//case macWithiPadDesign
+//
+///// mac Catalyst support
+//case macCatalyst
+//
+///// watchOS support
+//case appleWatch
+//
+///// tvOS support
+//case appleTv
+//
+///// visionOS support
+//case appleVision
+//
+///// visionOS support using iPad design
+//case appleVisionWithiPadDesign
