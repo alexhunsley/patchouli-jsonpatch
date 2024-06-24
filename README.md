@@ -1,3 +1,7 @@
+<div align="center">
+<img src="https://github.com/alexhunsley/patchouli-jsonpatch/blob/main/Tests/Resources/patchouli-json-logo-1-scaled.png">
+</div>
+
 # Patchouli JSON Patcher
 
 [![Apache 2 License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://opensource.org/licenses/Apache-2.0)
@@ -5,7 +9,7 @@
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Falexhunsley%2Fpatchouli-core%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/alexhunsley/patchouli-core)
 [![Build System](https://img.shields.io/badge/dependency%20management-spm-yellow.svg)](https://swift.org/package-manager/)
 
-![image](https://github.com/alexhunsley/patchouli-jsonpatch/assets/793071/2c0493ee-a5dc-40ad-858e-863b6a96a8a2)
+
 
 This is a [JSON Patch](https://jsonpatch.com) library for Swift featuring an ergonomic DSL. It is built with the [Patchouli Core](https://github.com/alexhunsley/patchouli-core) engine and uses [JSONPatch](https://github.com/raymccrae/swift-jsonpatch) lib for the patch execution.
 
