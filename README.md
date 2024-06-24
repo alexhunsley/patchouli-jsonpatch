@@ -1,5 +1,5 @@
 <div align="center">
-<img src="https://github.com/alexhunsley/patchouli-jsonpatch/blob/main/Tests/Resources/patchouli-json-logo-1-scaled.png">
+<img src="https://github.com/alexhunsley/patchouli-jsonpatch/blob/main/Tests/Resources/patchouli-json-logo-1-scaled-378x375.png">
 </div>
 
 # Patchouli JSON Patcher
