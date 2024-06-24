@@ -1,8 +1,8 @@
 # Patchouli JSON Patcher
 
 [![Apache 2 License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Swift compatability](https://img.shields.io/badge/Swift%20compatability-5-red.svg)](http://developer.apple.com)
-[![Supported Platforms](https://img.shields.io/badge/platform-macos%20%7C%20ios%20%7C%20tvos%20%7C%20watchos-lightgreen.svg)](http://developer.apple.com)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Falexhunsley%2Fpatchouli-core%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/alexhunsley/patchouli-core)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Falexhunsley%2Fpatchouli-core%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/alexhunsley/patchouli-core)
 [![Build System](https://img.shields.io/badge/dependency%20management-spm-yellow.svg)](https://swift.org/package-manager/)
 
 ![image](https://github.com/alexhunsley/patchouli-jsonpatch/assets/793071/2c0493ee-a5dc-40ad-858e-863b6a96a8a2)
