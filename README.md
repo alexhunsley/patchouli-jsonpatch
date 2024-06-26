@@ -17,6 +17,8 @@ This is a [JSON Patch](https://jsonpatch.com) library for Swift featuring an erg
 
 To install via SPM, add a dependency for `https://github.com/alexhunsley/patchouli-jsonpatch`.
 
+Or to take PatchouliJSON for a spin in a playground, visit https://swiftpackageindex.com/alexhunsley/patchouli-jsonpatch and select "Try in a playground".
+
 ## Usage
 
 ```swift
